@@ -19,7 +19,7 @@ Open http://127.0.0.1:5173. Browser tests automatically start/reuse Vite. On Lin
 
 ## What works
 
-- Redress home, preserving the existing navy #14213D, cream #F4EDE0 and coral #FF6B5B theme, Waves shader, glass cards, pixel section titles and responsive layouts. Template pricing became illustrative coverage capital; the composer became a borrower/workspace entry point.
+- Redress home with an edge-to-edge dark shell (#0B0E17), off-white text (#EEF0F4), coral actions (#FF5C39), Waves background, modern sans headings and responsive layouts. Template pricing became illustrative coverage capital; the composer became a borrower/workspace entry point.
 - Public routes: `/#replay`, `/#lookup`, `/#monitor`, `/#incidents`, `/#vault`. No wallet required for public evidence. Legacy `/#dashboard` opens replay. Direct links and reloads work; state is ephemeral.
 - MetaMask account/network/native-balance reads; honest demo fallback and no signing, approvals or transactions.
 - Replay play/pause/reset, block stepping, speed, seek, running lower-bound totals and evidence drilldown. Demo steps are NOT historical block numbers. No mainnet fork executes in this UI.
@@ -64,3 +64,12 @@ Motion: GPU work is capped around 30fps/950k pixels; hidden/offscreen rendering 
 - [Arkiv schema](arkiv/schema.md), [why Arkiv](arkiv/why-arkiv.md), [usage](arkiv/how-you-use-arkiv.md), [friction](arkiv/friction.md), [reach](arkiv/reach.md), [Swarm](arkiv/swarm.md)
 - [Sponsor feedback](FEEDBACK.md): pending actual integration feedback, not fabricated experience.
 - MIT license. No private keys or RPC secrets belong in this repository.
+
+
+## Visual audit refinement
+
+The current UI follows the latest supplied audit: no framed hero card, no cream coverage panel, no pixel homepage headings, and only one wallet home action. The viewport-wide shader remains decorative. `web/src/polish.css` contains the current layout refinements; shared palette values stay in `globals.css`.
+
+`components/features/feature-section.tsx` implements the six-step lifecycle with keyboard tabs, code-rendered synthetic visuals, visible autoplay controls, pointer/focus pause, offscreen/tab-hidden pause and manual reduced-motion mode. It reuses `motion/react`; no duplicate framer-motion installation is needed.
+
+`components/ui/tracker-card-1.tsx` renders transaction-step states in verdict details. Exact payout units remain integer strings. Synthetic calculations do not imply consensus, block confirmation or payout. Explorer links require a verified backend record, supported network and full hash; evidence buttons download the existing local JSON instead of claiming a published Swarm manifest.

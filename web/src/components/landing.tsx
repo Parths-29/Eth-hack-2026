@@ -1,7 +1,7 @@
 import type { View } from "./redress-workspace";
 import { isAddress } from "../lib/data";
 import { ShaderBackground } from "./ui/istanblue";
-import { PixelTitle, PixelIcon } from "./pixel-title";
+import { FeatureSteps } from "./features/feature-section";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import {
   ArrowUp,
@@ -18,32 +18,6 @@ import {
   X,
   Zap,
 } from "lucide-react";
-const features = [
-  [
-    "Detect the anomaly",
-    "Observe lending-protocol liquidations without changing the protocol or its oracle.",
-  ],
-  [
-    "Rebuild the price band",
-    "Compare independent sources, reject outliers and require at least three surviving inputs.",
-  ],
-  [
-    "Verify the verdict",
-    "Use a health-factor interval to distinguish wrongful, valid, excess and ambiguous cases.",
-  ],
-  [
-    "Compute the provable floor",
-    "Calculate collateral lost minus debt relieved at the conservative edge of the band.",
-  ],
-  [
-    "Fund the waterfall",
-    "Operator bonds absorb loss first, followed by a shared reserve and an optional treasury line.",
-  ],
-  [
-    "Publish the evidence",
-    "Make per-user verdicts and evidence queryable. Arkiv and Swarm connections await deployment.",
-  ],
-];
 const categories = [
   { name: "Lookup", Icon: Smartphone },
   { name: "Replay", Icon: Monitor },
@@ -165,8 +139,10 @@ export function Landing({
   return (
     <main ref={home} className="mosaic-landing">
       <div className="site-atmosphere" aria-hidden="true" />
-      <section className="mosaic-hero">
+      <div className="landing-atmosphere" aria-hidden="true">
         <ShaderBackground />
+      </div>
+      <section className="mosaic-hero">
         <div className="wave-shade" aria-hidden="true" />
         <div className="mosaic-intro">
           <span className="release-pill">
@@ -183,6 +159,14 @@ export function Landing({
             <br className="desktop-break" /> In blocks, not weeks — the Redress
             design goal.
           </p>
+          <div className="hero-primary-actions">
+            <button className="primary" onClick={() => onNavigate("replay")}>
+              Explore replay <ArrowUpRight size={16} />
+            </button>
+            <button className="subtle" onClick={() => onNavigate("lookup")}>
+              Check a wallet <ArrowUpRight size={16} />
+            </button>
+          </div>
         </div>
         <div className="prompt-area">
           <div className="prompt-workspace">
@@ -367,54 +351,13 @@ export function Landing({
           <span className="caption-rule" />
         </div>
       </section>
-      <section className="mosaic-section" id="features">
-        <div className="center-heading" data-reveal>
-          <span className="section-kicker">
-            <Sparkles size={13} /> FEATURES
-          </span>
-          <h2>
-            <PixelTitle text="Built for redress" />
-          </h2>
-          <p>
-            From liquidation detection to a reproducible verdict,
-            <br className="desktop-break" /> with a conservative, evidence-first
-            payout design.
-          </p>
-          <span className="concept-label">
-            Architecture from the PRD · deployed integrations pending
-          </span>
-        </div>
-        <div className="feature-grid">
-          {features.map(([name, description], i) => (
-            <article
-              className="feature-tile"
-              key={name}
-              data-reveal
-              style={{ transitionDelay: `${(i % 3) * 70}ms` }}
-              onPointerMove={spotlight}
-            >
-              <div className="feature-number">
-                <span className="pixel-icon-box">
-                  <PixelIcon index={i} />
-                </span>
-                <span className="feature-index">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <h3>{name}</h3>
-              <p>{description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <FeatureSteps />
       <section className="mosaic-section pricing-section" id="pricing">
         <div className="center-heading" data-reveal>
           <span className="section-kicker">
             <Code2 size={13} /> COVERAGE
           </span>
-          <h2>
-            <PixelTitle text="Capital & proof" />
-          </h2>
+          <h2>Capital & proof</h2>
           <p>A pre-funded waterfall. A public record.</p>
           <span className="concept-label">
             Illustrative reserves · Not an insurance product

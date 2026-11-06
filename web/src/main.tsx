@@ -9,6 +9,7 @@ import {
 import { RedressWorkspace, type View } from "./components/redress-workspace";
 import { Landing } from "./components/landing";
 import "./globals.css";
+import "./polish.css";
 
 type Provider = {
   isMetaMask?: boolean;
@@ -251,9 +252,6 @@ function App() {
               if (e.key === "Escape") close();
             }}
           >
-            <button className="back-link text-link" onClick={close}>
-              <ArrowLeft size={16} /> Back to home
-            </button>
             <div className="connect-heading">
               <span className="eyebrow">01 / CONNECT</span>
               <h1>Choose your account.</h1>

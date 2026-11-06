@@ -162,7 +162,7 @@ test("home preserves theme and domain actions", async ({ page }) => {
       css.getPropertyValue(k).trim(),
     );
   });
-  expect(colors).toEqual(["#14213D", "#F4EDE0", "#FF6B5B"]);
+  expect(colors).toEqual(["#0B0E17", "#EEF0F4", "#FF5C39"]);
   await page.getByRole("button", { name: "Stress 2×" }).click();
   await expect(page.getByText("2000", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Lookup", exact: true }).click();

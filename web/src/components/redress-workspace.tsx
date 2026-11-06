@@ -1,3 +1,7 @@
+import {
+  RestitutionTrackerCard,
+  type RestitutionStep,
+} from "./ui/tracker-card-1";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -103,88 +107,159 @@ function Evidence({ record }: { record: FrontendVerdict }) {
   };
   const tx = transactionUrl(record),
     payout = transactionUrl(record, true);
+  const synthetic = record.provenance === "synthetic";
+  const insufficient = record.position.sourceCount < 3;
+  const trackerSteps: RestitutionStep[] = [
+    {
+      title: synthetic ? "Synthetic inputs loaded" : "Backend inputs received",
+      description: synthetic
+        ? "Constructed position; no historical event was observed."
+        : "Read the underlying transaction before relying on this record.",
+      status: "completed",
+    },
+    {
+      title: "Independent price inputs",
+      description: insufficient
+        ? "Fewer than three inputs. Re-evaluation is required."
+        : `${record.position.sourceCount} ${synthetic ? "illustrative" : "reported"} inputs; source independence is not certified by the browser.`,
+      status: insufficient ? "error" : "completed",
+    },
+    {
+      title: "Reference verdict",
+      description: insufficient
+        ? "INCONCLUSIVE — no payout computed."
+        : `${result.verdict}, calculated from the supplied interval.`,
+      status: insufficient ? "pending" : "completed",
+    },
+    {
+      title: "Provable floor",
+      description: insufficient
+        ? "Awaiting sufficient source inputs."
+        : `${format(result.amount)} WETH. This calculation does not send a transaction.`,
+      status: insufficient ? "pending" : "completed",
+    },
+    {
+      title: "Contract report",
+      description:
+        "No CRE attestation or block-confirmation data has been supplied.",
+      status: "pending",
+    },
+    {
+      title: "Restitution settlement",
+      description: synthetic
+        ? "Simulation only. No funds have been sent."
+        : record.settlement === "paid"
+          ? "Reported paid by the backend. Verify the transaction onchain."
+          : "No completed payout has been reported.",
+      status:
+        !synthetic && record.settlement === "paid" ? "completed" : "pending",
+      txHash: record.payoutTxHash,
+    },
+  ];
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge>{record.verdict}</Badge>
-        <Badge>
-          {record.settlement === "simulated"
-            ? "SIMULATED • NOT PAID"
-            : record.settlement.toUpperCase()}
-        </Badge>
-        <Badge>{record.provenance.toUpperCase()}</Badge>
-      </div>
-      <p className="break-all font-mono text-sm">{record.user}</p>
-      <dl className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-3">
-        <div>
-          <dt className="text-muted-foreground">Health factor interval</dt>
-          <dd className="mt-2 font-mono">
-            {format(result.hfWorst)} – {format(result.hfBest)}
-          </dd>
+    <div className="evidence-layout">
+      <RestitutionTrackerCard
+        status={
+          insufficient
+            ? "Source inputs unavailable"
+            : record.verdict === "VALID"
+              ? "Valid · no restitution"
+              : synthetic
+                ? "Demo calculation complete"
+                : record.settlement === "paid"
+                  ? "Reported restitution complete"
+                  : "Restitution queued"
+        }
+        userAddress={record.user}
+        liquidatedAsset={record.collateralAsset}
+        payoutAmountWei={record.redressAmount}
+        steps={trackerSteps}
+        chainId={record.chainId}
+        synthetic={synthetic}
+        onViewEvidence={download}
+      />
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge>{record.verdict}</Badge>
+          <Badge>
+            {record.settlement === "simulated"
+              ? "SIMULATED • NOT PAID"
+              : record.settlement.toUpperCase()}
+          </Badge>
+          <Badge>{record.provenance.toUpperCase()}</Badge>
         </div>
-        <div>
-          <dt className="text-muted-foreground">Collateral seized</dt>
-          <dd className="mt-2">
-            <Amount value={record.collateralSeized} suffix="wstETH" />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground">Provable floor</dt>
-          <dd className="mt-2 text-primary">
-            <Amount value={record.redressAmount} />
-          </dd>
-        </div>
-      </dl>
-      <div className="space-y-2 border-t border-border pt-4">
-        {record.sources.map((s) => (
-          <div
-            key={s.name}
-            className="flex flex-wrap justify-between gap-2 text-xs"
-          >
-            <span>{s.name}</span>
-            <span className="font-mono text-muted-foreground">
-              {format(s.price, 5)} ETH · {s.status}
-            </span>
+        <p className="break-all font-mono text-sm">{record.user}</p>
+        <dl className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-3">
+          <div>
+            <dt className="text-muted-foreground">Health factor interval</dt>
+            <dd className="mt-2 font-mono">
+              {format(result.hfWorst)} – {format(result.hfBest)}
+            </dd>
           </div>
-        ))}
+          <div>
+            <dt className="text-muted-foreground">Collateral seized</dt>
+            <dd className="mt-2">
+              <Amount value={record.collateralSeized} suffix="wstETH" />
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Provable floor</dt>
+            <dd className="mt-2 text-primary">
+              <Amount value={record.redressAmount} />
+            </dd>
+          </div>
+        </dl>
+        <div className="space-y-2 border-t border-border pt-4">
+          {record.sources.map((s) => (
+            <div
+              key={s.name}
+              className="flex flex-wrap justify-between gap-2 text-xs"
+            >
+              <span>{s.name}</span>
+              <span className="font-mono text-muted-foreground">
+                {format(s.price, 5)} ETH · {s.status}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Lower-bound formula: max(0, collateral seized × band low − debt
+          relieved × debt band high), converted to debt units. Excess/ambiguous
+          cases deduct the allowed liquidation bonus. This browser reference is
+          not an onchain attestation.
+        </p>
+        <div className="flex flex-wrap items-center gap-4 text-xs">
+          {tx ? (
+            <a href={tx} target="_blank" rel="noreferrer">
+              Liquidation transaction ↗
+            </a>
+          ) : (
+            <span className="text-muted-foreground">
+              Liquidation transaction: not published
+            </span>
+          )}
+          {payout ? (
+            <a href={payout} target="_blank" rel="noreferrer">
+              Payout transaction ↗
+            </a>
+          ) : (
+            <span className="text-muted-foreground">
+              Payout proof: not published
+            </span>
+          )}
+          <button className="text-link" onClick={download}>
+            <Download size={13} /> Download evidence
+          </button>
+        </div>
+        <p className="break-all text-xs text-muted-foreground">
+          Evidence hash: {record.evidenceHash || "Not published"}
+          <br />
+          Arkiv entity: {record.arkivEntityKey || "Not published"}
+        </p>
+        <p className="text-xs" role="status">
+          {message}
+        </p>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Lower-bound formula: max(0, collateral seized × band low − debt relieved
-        × debt band high), converted to debt units. Excess/ambiguous cases
-        deduct the allowed liquidation bonus. This browser reference is not an
-        onchain attestation.
-      </p>
-      <div className="flex flex-wrap items-center gap-4 text-xs">
-        {tx ? (
-          <a href={tx} target="_blank" rel="noreferrer">
-            Liquidation transaction ↗
-          </a>
-        ) : (
-          <span className="text-muted-foreground">
-            Liquidation transaction: not published
-          </span>
-        )}
-        {payout ? (
-          <a href={payout} target="_blank" rel="noreferrer">
-            Payout transaction ↗
-          </a>
-        ) : (
-          <span className="text-muted-foreground">
-            Payout proof: not published
-          </span>
-        )}
-        <button className="text-link" onClick={download}>
-          <Download size={13} /> Download evidence
-        </button>
-      </div>
-      <p className="break-all text-xs text-muted-foreground">
-        Evidence hash: {record.evidenceHash || "Not published"}
-        <br />
-        Arkiv entity: {record.arkivEntityKey || "Not published"}
-      </p>
-      <p className="text-xs" role="status">
-        {message}
-      </p>
     </div>
   );
 }
