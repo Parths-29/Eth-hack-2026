@@ -1,5 +1,11 @@
+import { downloadEvidence } from "../lib/evidence";
+import { AnimatePresence, motion } from "motion/react";
+import { useSurfaceMotion } from "./ui/page-transition";
+import { VerdictTracker } from "./features/verdict-tracker";
+import { DEMO_RECORDS } from "../../../shared/demo";
+import type { FrontendVerdict } from "../../../shared/types";
 import type { View } from "./redress-workspace";
-import { isAddress } from "../lib/data";
+import { isAddress, loadVerdicts } from "../lib/data";
 import { ShaderBackground } from "./ui/istanblue";
 import { FeatureSteps } from "./features/feature-section";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
@@ -71,6 +77,13 @@ export function Landing({
   onConnect: () => void;
   onNavigate: (view: View, address?: string) => void;
 }) {
+  const surfaceMotion = useSurfaceMotion();
+  const [terminalRecord, setTerminalRecord] = useState<FrontendVerdict | null>(
+    null,
+  );
+  const [terminalBusy, setTerminalBusy] = useState(false);
+  const terminalRequest = useRef<AbortController | null>(null);
+  useEffect(() => () => terminalRequest.current?.abort(), []);
   const [category, setCategory] = useState("Replay");
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState("Window observer");
@@ -116,28 +129,47 @@ export function Landing({
       `${event.clientY - rect.top}px`,
     );
   };
-  const build = () => {
-    if (category === "Lookup" && prompt.trim() && !isAddress(prompt.trim())) {
-      setNotice(
-        "Enter a complete 0x borrower wallet address, or leave it empty to open the lookup.",
-      );
-      textarea.current?.focus();
+  const build = async () => {
+    terminalRequest.current?.abort();
+    setNotice("");
+    if (category === "Replay") {
+      setTerminalRecord(DEMO_RECORDS[0]);
+      setTerminalBusy(false);
       return;
     }
-    onNavigate(
-      (
-        {
-          Lookup: "lookup",
-          Replay: "replay",
-          Monitor: "monitor",
-          Vault: "vault",
-        } as Record<string, View>
-      )[category],
-      category === "Lookup" ? prompt.trim() : undefined,
-    );
+    if (category === "Lookup") {
+      if (!isAddress(prompt.trim())) {
+        setNotice(
+          "Enter a complete 0x borrower wallet address to preview a verdict.",
+        );
+        textarea.current?.focus();
+        return;
+      }
+      const controller = new AbortController();
+      terminalRequest.current = controller;
+      setTerminalBusy(true);
+      try {
+        const rows = await loadVerdicts(
+          { user: prompt.trim() },
+          controller.signal,
+        );
+        if (controller.signal.aborted) return;
+        if (rows[0]) setTerminalRecord(rows[0]);
+        else
+          setNotice(
+            "No matching verdict found in the current dataset. Open lookup for the full query view.",
+          );
+      } catch (e) {
+        if (!controller.signal.aborted) setNotice((e as Error).message);
+      } finally {
+        if (!controller.signal.aborted) setTerminalBusy(false);
+      }
+      return;
+    }
+    onNavigate(category === "Monitor" ? "monitor" : "vault");
   };
   return (
-    <main ref={home} className="mosaic-landing">
+    <motion.main ref={home} className="mosaic-landing" {...surfaceMotion}>
       <div className="site-atmosphere" aria-hidden="true" />
       <div className="landing-atmosphere" aria-hidden="true">
         <ShaderBackground />
@@ -169,167 +201,240 @@ export function Landing({
           </div>
         </div>
         <div className="prompt-area">
-          <div className="prompt-workspace">
-            <label className="sr-only" htmlFor="app-prompt">
-              Borrower address (optional for replay)
-            </label>
-            <textarea
-              ref={textarea}
-              id="app-prompt"
-              value={prompt}
-              rows={2}
-              placeholder="Enter a borrower address, or press Enter to explore the replay…"
-              onChange={(e) => {
-                setPrompt(e.target.value);
-                e.currentTarget.style.height = "auto";
-                e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 240)}px`;
-              }}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !e.shiftKey &&
-                  !e.nativeEvent.isComposing
-                ) {
-                  e.preventDefault();
-                  build();
-                }
-              }}
-            />
-            <div className="category-chips" aria-label="Redress destination">
-              {categories.map(({ name, Icon }) => (
-                <button
-                  key={name}
-                  aria-pressed={category === name}
-                  className={category === name ? "selected" : ""}
-                  onClick={() => setCategory(name)}
-                >
-                  <Icon size={13} />
-                  {name}
-                </button>
-              ))}
-            </div>
-            {files.length > 0 && (
-              <div className="attached-files">
-                {files.map((file, i) => (
-                  <span key={`${file.name}-${i}`}>
-                    <Paperclip size={11} />
-                    {file.name}
-                    <button
-                      onClick={() =>
-                        setFiles((f) => f.filter((_, j) => j !== i))
-                      }
-                      aria-label={`Remove ${file.name}`}
-                    >
-                      <X size={11} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="prompt-toolbar">
-              <div
-                className="model-control"
-                onBlur={(e) => {
-                  if (!e.currentTarget.contains(e.relatedTarget))
-                    setMenu(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") {
-                    setMenu(false);
-                    modelButton.current?.focus();
-                  }
-                }}
+          <AnimatePresence mode="wait" initial={false}>
+            {terminalRecord ? (
+              <motion.div
+                key="tracker"
+                {...surfaceMotion}
+                className="terminal-tracker"
               >
-                <button
-                  ref={modelButton}
-                  className="model-trigger"
-                  aria-expanded={menu}
-                  aria-controls="model-options"
-                  onClick={() => setMenu((v) => !v)}
-                >
-                  <Zap size={14} />
-                  {model}
-                  <ChevronDown size={12} className={menu ? "turned" : ""} />
-                </button>
-                {menu && (
-                  <div
-                    className="model-options"
-                    id="model-options"
-                    aria-label="Model selection"
+                <div className="terminal-controls">
+                  <span className="eyebrow">LOCAL WALKTHROUGH</span>
+                  <button
+                    className="text-link"
+                    onClick={() => {
+                      setTerminalRecord(null);
+                      setNotice("");
+                    }}
                   >
-                    {[
-                      "Window observer",
-                      "Guard · roadmap",
-                      "Native · roadmap",
-                    ].map((name, i) => (
-                      <button
-                        key={name}
-                        aria-pressed={name === model}
-                        onClick={() => {
-                          setModel(name);
-                          setMenu(false);
-                          setNotice(
-                            name === "Window observer"
-                              ? "Window observer is the current demo scope."
-                              : "This integration mode is roadmap only; opening a page still uses the Window demo.",
-                          );
-                          modelButton.current?.focus();
-                        }}
-                      >
-                        <span>
-                          {name}
-                          <small>
-                            {
-                              [
-                                "Read-only observer · MVP scope",
-                                "Opt-in router · not implemented",
-                                "Protocol integration · not implemented",
-                              ][i]
-                            }
-                          </small>
-                        </span>
-                        {model === name && <Check size={14} />}
-                      </button>
-                    ))}
-                    <p>Integration modes · testnet/fork scope</p>
-                  </div>
-                )}
-              </div>
-              <div className="prompt-tools">
-                <input
-                  ref={upload}
-                  type="file"
-                  multiple
-                  className="sr-only"
-                  tabIndex={-1}
-                  onChange={(e) => {
-                    const picked = Array.from(e.target.files ?? []);
-                    setFiles((f) => [...f, ...picked]);
-                    e.target.value = "";
-                  }}
+                    Back to explorer ×
+                  </button>
+                </div>
+                <div
+                  className="terminal-scenarios"
+                  role="group"
+                  aria-label="Terminal simulation"
+                >
+                  <button
+                    aria-pressed={terminalRecord.verdict === "WRONGFUL"}
+                    onClick={() => setTerminalRecord(DEMO_RECORDS[0])}
+                  >
+                    Wrongful example
+                  </button>
+                  <button
+                    aria-pressed={terminalRecord.verdict === "VALID"}
+                    onClick={() => setTerminalRecord(DEMO_RECORDS[2])}
+                  >
+                    Safe rejection
+                  </button>
+                </div>
+                <VerdictTracker
+                  record={terminalRecord}
+                  onViewEvidence={() => downloadEvidence(terminalRecord)}
                 />
                 <button
-                  className="attach-button"
-                  aria-label="Attach local evidence notes"
-                  title="Attach files locally (not uploaded)"
-                  onClick={() => upload.current?.click()}
+                  className="subtle terminal-open"
+                  onClick={() => onNavigate("replay")}
                 >
-                  <Paperclip size={17} />
+                  Open full Replay Theater <ArrowUpRight size={15} />
                 </button>
-                <button
-                  className="submit-prompt"
-                  aria-label="Open Redress workspace"
-                  onClick={build}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="explorer"
+                {...surfaceMotion}
+                className="prompt-workspace"
+              >
+                <label className="sr-only" htmlFor="app-prompt">
+                  Borrower address (optional for replay)
+                </label>
+                <textarea
+                  ref={textarea}
+                  id="app-prompt"
+                  value={prompt}
+                  rows={2}
+                  placeholder="Enter a borrower address, or press Enter to explore the replay…"
+                  onChange={(e) => {
+                    terminalRequest.current?.abort();
+                    setTerminalBusy(false);
+                    setNotice("");
+                    setPrompt(e.target.value);
+                    e.currentTarget.style.height = "auto";
+                    e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 240)}px`;
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey &&
+                      !e.nativeEvent.isComposing
+                    ) {
+                      e.preventDefault();
+                      build();
+                    }
+                  }}
+                />
+                <div
+                  className="category-chips"
+                  aria-label="Redress destination"
                 >
-                  <ArrowUp size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-          <p className="prompt-help">
-            <kbd>Enter</kbd> to explore <span>/</span> <kbd>Shift + Enter</kbd>{" "}
-            for a new line
-          </p>
+                  {categories.map(({ name, Icon }) => (
+                    <button
+                      key={name}
+                      aria-pressed={category === name}
+                      className={category === name ? "selected" : ""}
+                      onClick={() => {
+                        terminalRequest.current?.abort();
+                        setTerminalBusy(false);
+                        setCategory(name);
+                        setNotice("");
+                      }}
+                    >
+                      <Icon size={13} />
+                      {name}
+                    </button>
+                  ))}
+                </div>
+                {files.length > 0 && (
+                  <div className="attached-files">
+                    {files.map((file, i) => (
+                      <span key={`${file.name}-${i}`}>
+                        <Paperclip size={11} />
+                        {file.name}
+                        <button
+                          onClick={() =>
+                            setFiles((f) => f.filter((_, j) => j !== i))
+                          }
+                          aria-label={`Remove ${file.name}`}
+                        >
+                          <X size={11} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="prompt-toolbar">
+                  <div
+                    className="model-control"
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget))
+                        setMenu(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") {
+                        setMenu(false);
+                        modelButton.current?.focus();
+                      }
+                    }}
+                  >
+                    <button
+                      ref={modelButton}
+                      className="model-trigger"
+                      aria-expanded={menu}
+                      aria-controls="model-options"
+                      onClick={() => setMenu((v) => !v)}
+                    >
+                      <Zap size={14} />
+                      {model}
+                      <ChevronDown size={12} className={menu ? "turned" : ""} />
+                    </button>
+                    {menu && (
+                      <div
+                        className="model-options"
+                        id="model-options"
+                        aria-label="Model selection"
+                      >
+                        {[
+                          "Window observer",
+                          "Guard · roadmap",
+                          "Native · roadmap",
+                        ].map((name, i) => (
+                          <button
+                            key={name}
+                            aria-pressed={name === model}
+                            onClick={() => {
+                              setModel(name);
+                              setMenu(false);
+                              setNotice(
+                                name === "Window observer"
+                                  ? "Window observer is the current demo scope."
+                                  : "This integration mode is roadmap only; opening a page still uses the Window demo.",
+                              );
+                              modelButton.current?.focus();
+                            }}
+                          >
+                            <span>
+                              {name}
+                              <small>
+                                {
+                                  [
+                                    "Read-only observer · MVP scope",
+                                    "Opt-in router · not implemented",
+                                    "Protocol integration · not implemented",
+                                  ][i]
+                                }
+                              </small>
+                            </span>
+                            {model === name && <Check size={14} />}
+                          </button>
+                        ))}
+                        <p>Integration modes · testnet/fork scope</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="prompt-tools">
+                    <input
+                      ref={upload}
+                      type="file"
+                      multiple
+                      className="sr-only"
+                      tabIndex={-1}
+                      onChange={(e) => {
+                        const picked = Array.from(e.target.files ?? []);
+                        setFiles((f) => [...f, ...picked]);
+                        e.target.value = "";
+                      }}
+                    />
+                    <button
+                      className="attach-button"
+                      aria-label="Attach local evidence notes"
+                      title="Attach files locally (not uploaded)"
+                      onClick={() => upload.current?.click()}
+                    >
+                      <Paperclip size={17} />
+                    </button>
+                    <button
+                      className="submit-prompt"
+                      aria-label={
+                        terminalBusy
+                          ? "Reading verdict"
+                          : "Open Redress workspace"
+                      }
+                      onClick={build}
+                      disabled={terminalBusy}
+                    >
+                      <ArrowUp size={20} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {!terminalRecord && (
+            <p className="prompt-help">
+              <kbd>Enter</kbd> to explore <span>/</span>{" "}
+              <kbd>Shift + Enter</kbd> for a new line
+            </p>
+          )}
           <p className="workspace-disclaimer">
             Synthetic demo · No funds sent · Notes remain local
           </p>
@@ -457,6 +562,6 @@ export function Landing({
           Or connect your wallet <ArrowUpRight size={12} />
         </button>
       </section>
-    </main>
+    </motion.main>
   );
 }

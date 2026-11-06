@@ -5,12 +5,14 @@ test("full-width dark shell and sans headings", async ({ page }) => {
     await page
       .locator(".app-shell")
       .evaluate((e) => e.getBoundingClientRect().width),
-  ).toBe(await page.evaluate(() => innerWidth));
+  ).toBe(
+    await page.evaluate(() => document.body.getBoundingClientRect().width),
+  );
   expect(
     await page
       .locator(".mosaic-hero")
       .evaluate((e) => getComputedStyle(e).borderTopWidth),
-  ).toBe("0px");
+  ).toBe("1px");
   await expect(page.locator("#features h2")).toHaveText("Built for redress");
   await expect(page.locator("#features h2 svg,#pricing h2 svg")).toHaveCount(0);
   const background = await page

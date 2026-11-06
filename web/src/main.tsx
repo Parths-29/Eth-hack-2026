@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
-import { MotionConfig } from "motion/react";
+import { AnimatePresence, motion, MotionConfig } from "motion/react";
 import {
   WalletAccountPicker,
   type Account,
@@ -10,6 +10,8 @@ import { RedressWorkspace, type View } from "./components/redress-workspace";
 import { Landing } from "./components/landing";
 import "./globals.css";
 import "./polish.css";
+import "./glass.css";
+import { useSurfaceMotion } from "./components/ui/page-transition";
 
 type Provider = {
   isMetaMask?: boolean;
@@ -53,6 +55,7 @@ function Brand() {
   );
 }
 function App() {
+  const surfaceMotion = useSurfaceMotion();
   const allowed = [
     "landing",
     "connect",
@@ -214,7 +217,16 @@ function App() {
   };
   return (
     <MotionConfig reducedMotion="user">
-      <div className="app-shell">
+      <div
+        className="app-shell"
+        data-screen={
+          page === "landing"
+            ? "landing"
+            : page === "connect"
+              ? "connect"
+              : "workspace"
+        }
+      >
         <header className="site-header">
           <Brand />
           {page === "landing" ? (
@@ -242,54 +254,58 @@ function App() {
             )}
           </button>
         </header>
-        {page === "landing" && (
-          <Landing onConnect={connect} onNavigate={openView} />
-        )}
-        {page === "connect" && (
-          <main
-            className="connect-page"
-            onKeyDown={(e) => {
-              if (e.key === "Escape") close();
-            }}
-          >
-            <div className="connect-heading">
-              <span className="eyebrow">01 / CONNECT</span>
-              <h1>Choose your account.</h1>
-              <p>Your address is the start. The overview comes next.</p>
-            </div>
-            <WalletAccountPicker
-              loading={loading}
-              accounts={accounts}
-              selected={selected}
-              spin={spin}
-              copied={copied}
-              status={status}
-              closeRef={closeRef}
-              onClose={close}
-              onCopy={copy}
-              onContinue={enter}
-              onRetry={connect}
-              onSelect={(a) => {
-                setSelected(a);
-                setSpin((s) => s + 1080);
-                setCopied("");
+        <AnimatePresence mode="wait" initial={false}>
+          {page === "landing" && (
+            <Landing key="landing" onConnect={connect} onNavigate={openView} />
+          )}
+          {page === "connect" && (
+            <motion.main
+              key="connect"
+              {...surfaceMotion}
+              className="connect-page"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") close();
               }}
+            >
+              <div className="connect-heading">
+                <span className="eyebrow">01 / CONNECT</span>
+                <h1>Choose your account.</h1>
+                <p>Your address is the start. The overview comes next.</p>
+              </div>
+              <WalletAccountPicker
+                loading={loading}
+                accounts={accounts}
+                selected={selected}
+                spin={spin}
+                copied={copied}
+                status={status}
+                closeRef={closeRef}
+                onClose={close}
+                onCopy={copy}
+                onContinue={enter}
+                onRetry={connect}
+                onSelect={(a) => {
+                  setSelected(a);
+                  setSpin((s) => s + 1080);
+                  setCopied("");
+                }}
+              />
+              <p className="connect-foot mono">
+                NO SIGNATURES. NO TRANSACTIONS. JUST A VIEW.
+              </p>
+            </motion.main>
+          )}
+          {["replay", "lookup", "monitor", "incidents", "vault"].includes(
+            page,
+          ) && (
+            <RedressWorkspace
+              key="workspace"
+              view={page as View}
+              onNavigate={openView}
+              account={lookupAddress || active?.address}
             />
-            <p className="connect-foot mono">
-              NO SIGNATURES. NO TRANSACTIONS. JUST A VIEW.
-            </p>
-          </main>
-        )}
-        {["replay", "lookup", "monitor", "incidents", "vault"].includes(
-          page,
-        ) && (
-          <RedressWorkspace
-            key={page}
-            view={page as View}
-            onNavigate={openView}
-            account={lookupAddress || active?.address}
-          />
-        )}
+          )}
+        </AnimatePresence>
         <footer className="site-footer">
           <Brand />
           <span className="mono">REDRESS / TESTNET & FORK DEMO</span>

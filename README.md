@@ -73,3 +73,10 @@ The current UI follows the latest supplied audit: no framed hero card, no cream 
 `components/features/feature-section.tsx` implements the six-step lifecycle with keyboard tabs, code-rendered synthetic visuals, visible autoplay controls, pointer/focus pause, offscreen/tab-hidden pause and manual reduced-motion mode. It reuses `motion/react`; no duplicate framer-motion installation is needed.
 
 `components/ui/tracker-card-1.tsx` renders transaction-step states in verdict details. Exact payout units remain integer strings. Synthetic calculations do not imply consensus, block confirmation or payout. Explorer links require a verified backend record, supported network and full hash; evidence buttons download the existing local JSON instead of claiming a published Swarm manifest.
+
+
+## Stable liquid-glass navigation
+
+The latest brief refines the palette to obsidian #05070E, off-white #F1F3F7 and sunset coral #FF5533, with coral/crimson atmospheric light and emerald/red semantic tracker states. `glass.css` defines this material treatment, fluid shared page widths and lookup's two-column layout.
+
+The workspace shell stays mounted while tabs change; verdict data is not refetched on each tab. Keyed content scenes use a brief rise/perspective-tilt transition without animating document height. The stable scrollbar gutter prevents horizontal shifts. Reduced-motion mode uses immediate scene changes. The home terminal reserves space for its inline synthetic tracker and offers a safe VALID rejection scenario. Lookup shows its tracker directly alongside the query rather than shrinking into a single short card. No synthetic example asserts a real 14.28 WETH payout, CRE consensus or chain confirmations.

@@ -19,7 +19,7 @@ export interface RestitutionTrackerCardProps {
   status: string;
   userAddress: string;
   liquidatedAsset: string;
-  payoutAmountWei: string;
+  payoutAmountWei?: string;
   steps: RestitutionStep[];
   className?: string;
   onViewEvidence?: () => void;
@@ -56,7 +56,8 @@ export function RestitutionTrackerCard({
         </span>
         <p>Provable floor · {liquidatedAsset}</p>
         <div className="tracker-amount">
-          {format(payoutAmountWei)} <small>WETH</small>
+          {payoutAmountWei === undefined ? "—" : format(payoutAmountWei)}{" "}
+          <small>WETH</small>
         </div>
         <span className="tracker-provenance">
           {synthetic

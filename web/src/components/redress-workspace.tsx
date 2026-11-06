@@ -1,7 +1,8 @@
-import {
-  RestitutionTrackerCard,
-  type RestitutionStep,
-} from "./ui/tracker-card-1";
+import { downloadEvidence } from "../lib/evidence";
+import { VerdictTracker } from "./features/verdict-tracker";
+import { RestitutionTrackerCard } from "./ui/tracker-card-1";
+import { AnimatePresence, motion } from "motion/react";
+import { useSurfaceMotion } from "./ui/page-transition";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -80,104 +81,14 @@ function Evidence({ record }: { record: FrontendVerdict }) {
     );
   }
   const download = () => {
-    const blob = new Blob(
-      [
-        JSON.stringify(
-          {
-            notice:
-              record.provenance === "synthetic"
-                ? "Synthetic example; not historical evidence"
-                : "Backend-supplied evidence; independently verify against chain",
-            record,
-            referenceCalculation: result,
-          },
-          null,
-          2,
-        ),
-      ],
-      { type: "application/json" },
-    );
-    const href = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = href;
-    a.download = `redress-${record.id.replace(/[^a-zA-Z0-9-]/g, "")}.json`;
-    a.click();
-    URL.revokeObjectURL(href);
+    downloadEvidence(record);
     setMessage("Evidence JSON downloaded");
   };
   const tx = transactionUrl(record),
     payout = transactionUrl(record, true);
-  const synthetic = record.provenance === "synthetic";
-  const insufficient = record.position.sourceCount < 3;
-  const trackerSteps: RestitutionStep[] = [
-    {
-      title: synthetic ? "Synthetic inputs loaded" : "Backend inputs received",
-      description: synthetic
-        ? "Constructed position; no historical event was observed."
-        : "Read the underlying transaction before relying on this record.",
-      status: "completed",
-    },
-    {
-      title: "Independent price inputs",
-      description: insufficient
-        ? "Fewer than three inputs. Re-evaluation is required."
-        : `${record.position.sourceCount} ${synthetic ? "illustrative" : "reported"} inputs; source independence is not certified by the browser.`,
-      status: insufficient ? "error" : "completed",
-    },
-    {
-      title: "Reference verdict",
-      description: insufficient
-        ? "INCONCLUSIVE — no payout computed."
-        : `${result.verdict}, calculated from the supplied interval.`,
-      status: insufficient ? "pending" : "completed",
-    },
-    {
-      title: "Provable floor",
-      description: insufficient
-        ? "Awaiting sufficient source inputs."
-        : `${format(result.amount)} WETH. This calculation does not send a transaction.`,
-      status: insufficient ? "pending" : "completed",
-    },
-    {
-      title: "Contract report",
-      description:
-        "No CRE attestation or block-confirmation data has been supplied.",
-      status: "pending",
-    },
-    {
-      title: "Restitution settlement",
-      description: synthetic
-        ? "Simulation only. No funds have been sent."
-        : record.settlement === "paid"
-          ? "Reported paid by the backend. Verify the transaction onchain."
-          : "No completed payout has been reported.",
-      status:
-        !synthetic && record.settlement === "paid" ? "completed" : "pending",
-      txHash: record.payoutTxHash,
-    },
-  ];
   return (
     <div className="evidence-layout">
-      <RestitutionTrackerCard
-        status={
-          insufficient
-            ? "Source inputs unavailable"
-            : record.verdict === "VALID"
-              ? "Valid · no restitution"
-              : synthetic
-                ? "Demo calculation complete"
-                : record.settlement === "paid"
-                  ? "Reported restitution complete"
-                  : "Restitution queued"
-        }
-        userAddress={record.user}
-        liquidatedAsset={record.collateralAsset}
-        payoutAmountWei={record.redressAmount}
-        steps={trackerSteps}
-        chainId={record.chainId}
-        synthetic={synthetic}
-        onViewEvidence={download}
-      />
+      <VerdictTracker record={record} onViewEvidence={download} />
       <div className="space-y-5">
         <div className="flex flex-wrap items-center gap-2">
           <Badge>{record.verdict}</Badge>
@@ -310,6 +221,7 @@ export function RedressWorkspace({
   onNavigate: (v: View) => void;
   account?: string;
 }) {
+  const surfaceMotion = useSurfaceMotion();
   const [records, setRecords] = useState<FrontendVerdict[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -333,8 +245,9 @@ export function RedressWorkspace({
       });
     return () => controller.abort();
   }, [version]);
+  useEffect(() => setSelected(null), [view]);
   return (
-    <main className="dashboard">
+    <motion.main className="dashboard" {...surfaceMotion}>
       <div className="dashboard-heading">
         <div>
           <span className="eyebrow">REDRESS / WINDOW OBSERVER</span>
@@ -368,41 +281,47 @@ export function RedressWorkspace({
           </button>
         ))}
       </nav>
-      {loading ? (
-        <Panel title="Loading verdicts">
-          <p role="status">
-            Reading {isDemo ? "demo fixtures" : "the verdict service"}…
-          </p>
-        </Panel>
-      ) : error ? (
-        <Panel title="Service unavailable">
-          <p role="alert" className="break-words text-sm">
-            {error}
-          </p>
-          <button
-            className="subtle mt-4 self-start"
-            onClick={() => setVersion((v) => v + 1)}
-          >
-            Retry
-          </button>
-        </Panel>
-      ) : (
-        <>
-          {view === "replay" && (
-            <Replay records={records} onSelect={setSelected} />
-          )}
-          {view === "lookup" && (
-            <Lookup account={account} onSelect={setSelected} />
-          )}
-          {view === "monitor" && (
-            <Monitor initial={records} onSelect={setSelected} />
-          )}
-          {view === "incidents" && (
-            <Explorer records={records} onSelect={setSelected} />
-          )}
-          {view === "vault" && <Vault records={records} />}
-        </>
-      )}
+      <div className="workspace-body">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div key={view} className="workspace-scene" {...surfaceMotion}>
+            {loading ? (
+              <Panel title="Loading verdicts">
+                <p role="status">
+                  Reading {isDemo ? "demo fixtures" : "the verdict service"}…
+                </p>
+              </Panel>
+            ) : error ? (
+              <Panel title="Service unavailable">
+                <p role="alert" className="break-words text-sm">
+                  {error}
+                </p>
+                <button
+                  className="subtle mt-4 self-start"
+                  onClick={() => setVersion((v) => v + 1)}
+                >
+                  Retry
+                </button>
+              </Panel>
+            ) : (
+              <>
+                {view === "replay" && (
+                  <Replay records={records} onSelect={setSelected} />
+                )}
+                {view === "lookup" && (
+                  <Lookup account={account} onSelect={setSelected} />
+                )}
+                {view === "monitor" && (
+                  <Monitor initial={records} onSelect={setSelected} />
+                )}
+                {view === "incidents" && (
+                  <Explorer records={records} onSelect={setSelected} />
+                )}
+                {view === "vault" && <Vault records={records} />}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
       {selected && (
         <div className="mt-3">
           <Panel title="Verdict & evidence">
@@ -415,7 +334,7 @@ export function RedressWorkspace({
           </Panel>
         </div>
       )}
-    </main>
+    </motion.main>
   );
 }
 function Replay({
@@ -709,59 +628,152 @@ function Lookup({
     }
   };
   return (
-    <Panel title="Was I wronged? — borrower lookup">
-      <p className="mb-5 text-sm text-muted-foreground">
-        Read verdicts for a borrower.{" "}
-        {isDemo
-          ? "Local synthetic fixtures only; this is not an Arkiv read."
-          : "The configured service must query Arkiv and return the matching entities."}
-      </p>
-      <form onSubmit={search} className="flex flex-col gap-3 sm:flex-row">
-        <label className="sr-only" htmlFor="borrower">
-          Borrower wallet address
-        </label>
-        <input
-          id="borrower"
-          value={address}
-          onChange={(e) => {
-            request.current?.abort();
-            setAddress(e.target.value);
-            setRows(null);
-            setError("");
-            setBusy(false);
-          }}
-          placeholder="0x…"
-          className="min-w-0 flex-1 rounded-xl border border-border bg-background p-3 font-mono text-sm focus-visible:outline-2 focus-visible:outline-ring"
-        />
-        <button disabled={busy} className="primary">
-          <Search size={15} />
-          {busy ? "Searching…" : "Check address"}
-        </button>
-      </form>
-      {isDemo && (
-        <p className="mt-3 break-all text-xs text-muted-foreground">
-          Try synthetic address: 0x0000000000000000000000000000000000000001
+    <div className="lookup-grid">
+      <Panel
+        title="Was I wronged? — borrower lookup"
+        className="lookup-query-panel"
+      >
+        <p className="mb-5 text-sm text-muted-foreground">
+          Read verdicts for a borrower.{" "}
+          {isDemo
+            ? "Local synthetic fixtures only; this is not an Arkiv read."
+            : "The configured service must query Arkiv and return the matching entities."}
         </p>
-      )}
-      {error && (
-        <p className="mt-4 text-sm" role="alert">
-          {error}
-        </p>
-      )}
-      {rows && (
-        <div className="mt-5" role="status">
-          {rows.length ? (
-            <Feed records={rows} onSelect={onSelect} />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No record found for this address in{" "}
-              {isDemo ? "the demo dataset" : "the service response"}. This does
-              not prove that no wrongful liquidation occurred.
+        <form onSubmit={search} className="flex flex-col gap-3 sm:flex-row">
+          <label className="sr-only" htmlFor="borrower">
+            Borrower wallet address
+          </label>
+          <input
+            id="borrower"
+            value={address}
+            onChange={(e) => {
+              request.current?.abort();
+              setAddress(e.target.value);
+              setRows(null);
+              setError("");
+              setBusy(false);
+            }}
+            placeholder="0x…"
+            className="min-w-0 flex-1 rounded-xl border border-border bg-background p-3 font-mono text-sm focus-visible:outline-2 focus-visible:outline-ring"
+          />
+          <button disabled={busy} className="primary">
+            <Search size={15} />
+            {busy ? "Searching…" : "Check address"}
+          </button>
+        </form>
+        {isDemo && (
+          <button
+            className="lookup-example"
+            onClick={() => {
+              request.current?.abort();
+              setAddress("0x0000000000000000000000000000000000000001");
+              setRows(null);
+              setError("");
+              setBusy(false);
+            }}
+          >
+            Use a synthetic example address ↗
+          </button>
+        )}
+        {error && (
+          <p className="mt-4 text-sm" role="alert">
+            {error}
+          </p>
+        )}
+        {rows && (
+          <div className="mt-5" role="status">
+            {rows.length ? (
+              <Feed records={rows} onSelect={onSelect} />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No record found for this address in{" "}
+                {isDemo ? "the demo dataset" : "the service response"}. This
+                does not prove that no wrongful liquidation occurred.
+              </p>
+            )}
+          </div>
+        )}
+        <div className="lookup-guidance">
+          <span className="eyebrow">WHAT THE QUERY CHECKS</span>
+          <div>
+            <span>01</span>
+            <p>
+              <strong>Exact borrower identity</strong>Search for liquidation
+              verdicts tied to a full wallet address.
             </p>
-          )}
+          </div>
+          <div>
+            <span>02</span>
+            <p>
+              <strong>Independent evidence</strong>Inspect the supplied price
+              interval and position inputs.
+            </p>
+          </div>
+          <div>
+            <span>03</span>
+            <p>
+              <strong>Settlement provenance</strong>A computed loss is not a
+              payout. Verify reported chain evidence.
+            </p>
+          </div>
         </div>
-      )}
-    </Panel>
+      </Panel>
+      <aside
+        className="lookup-tracker-panel"
+        aria-label="Borrower verdict preview"
+      >
+        {rows?.[0] ? (
+          <VerdictTracker
+            record={rows[0]}
+            onViewEvidence={() => onSelect(rows[0])}
+          />
+        ) : (
+          <RestitutionTrackerCard
+            status={
+              busy
+                ? "Reading evidence"
+                : error
+                  ? "Query needs attention"
+                  : rows
+                    ? "No matching verdict"
+                    : "Awaiting borrower address"
+            }
+            userAddress={isAddress(address) ? address : "No borrower selected"}
+            liquidatedAsset="wstETH / WETH"
+            payoutAmountWei={undefined}
+            synthetic={isDemo}
+            steps={[
+              {
+                title: "Find borrower",
+                description: busy
+                  ? "Reading the current data source."
+                  : rows
+                    ? "No matching record. This is not proof that no wrongful liquidation occurred."
+                    : "Enter an address to inspect its verdict.",
+                status: busy ? "active" : error ? "error" : "pending",
+              },
+              {
+                title: "Inspect price interval",
+                description:
+                  "Independent source inputs appear when a record is available.",
+                status: "pending",
+              },
+              {
+                title: "Compute provable floor",
+                description: "No amount has been computed for this query yet.",
+                status: "pending",
+              },
+              {
+                title: "Verify settlement",
+                description:
+                  "No completed payout or chain confirmation has been observed.",
+                status: "pending",
+              },
+            ]}
+          />
+        )}
+      </aside>
+    </div>
   );
 }
 function Explorer({

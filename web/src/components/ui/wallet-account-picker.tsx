@@ -116,6 +116,7 @@ export function WalletAccountPicker({
         </span>
         <button
           ref={closeRef}
+          autoFocus
           className="icon-button"
           aria-label="Close account picker"
           onClick={onClose}

@@ -1,0 +1,697 @@
+/* Shared liquid-glass material and stable navigation surfaces. */
+:root,
+.dark {
+  --navy: #05070e;
+  --cream: #f1f3f7;
+  --coral: #ff5533;
+  --surface: rgba(255, 255, 255, 0.035);
+  --border: rgba(255, 255, 255, 0.11);
+  --positive: #34d399;
+  --negative: #f87171;
+  --glow: #ff4520;
+  --crimson: #b82842;
+}
+html {
+  scrollbar-gutter: stable;
+}
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+  perspective: none;
+}
+.app-shell:before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 95% 10%,
+      color-mix(in srgb, var(--glow) 13%, transparent),
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 15% 70%,
+      color-mix(in srgb, var(--crimson) 8%, transparent),
+      transparent 50%
+    );
+}
+.app-shell .site-header {
+  max-width: 1400px;
+  width: 100%;
+  height: 88px;
+  margin: 0 auto;
+  padding: 0 48px;
+  border-bottom-color: var(--border);
+  position: relative;
+  z-index: 5;
+}
+.mosaic-hero {
+  max-width: 1400px;
+  width: calc(100% - 96px);
+  margin: 26px auto 0;
+  padding: 64px;
+  min-height: 660px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(28px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.mosaic-intro h1.editorial-title {
+  font-size: clamp(44px, 4.5vw, 68px);
+  letter-spacing: -3px;
+  line-height: 1.06;
+}
+.mosaic-intro > p {
+  font-size: 14px;
+  line-height: 1.85;
+}
+.hero-caption {
+  grid-column: 1/-1;
+}
+.landing-atmosphere:after {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--background) 73%, transparent),
+    color-mix(in srgb, var(--background) 88%, transparent) 65%,
+    color-mix(in srgb, var(--background) 92%, transparent)
+  );
+}
+.prompt-area {
+  min-width: 0;
+  min-height: 330px;
+  align-content: center;
+  align-self: center;
+}
+.prompt-workspace {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(24px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.15);
+}
+.terminal-tracker {
+  min-width: 0;
+}
+.terminal-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.terminal-controls .text-link {
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.terminal-controls .eyebrow {
+  font-size: 8px;
+}
+.terminal-scenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.terminal-scenarios button {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.025);
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  color: var(--muted-foreground);
+  transition:
+    background 180ms,
+    color 180ms,
+    border-color 180ms;
+}
+.terminal-scenarios button[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.terminal-open {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 40px;
+  font-size: 11px;
+  padding: 10px;
+}
+.terminal-tracker .tracker-header {
+  padding: 18px;
+}
+.terminal-tracker .tracker-steps {
+  padding: 18px 18px 0;
+}
+.terminal-tracker .tracker-step-content {
+  padding-bottom: 16px;
+}
+.terminal-tracker .tracker-footer {
+  padding: 0 18px 18px;
+}
+.terminal-tracker .tracker-step-content p {
+  font-size: 10px;
+  line-height: 1.65;
+}
+.terminal-tracker .tracker-amount {
+  font-size: 28px;
+}
+.lifecycle-section {
+  max-width: 1304px;
+  margin: 64px auto 0;
+  padding: 45px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  backdrop-filter: blur(25px);
+  width: calc(100% - 96px);
+}
+.lifecycle-step {
+  background: rgba(255, 255, 255, 0.015);
+}
+.lifecycle-step.is-active {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+.lifecycle-step.is-active .lifecycle-icon {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 6%, transparent);
+}
+.lifecycle-display,
+.plan-card,
+.plan-card.featured,
+.picker,
+.restitution-tracker {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border);
+  backdrop-filter: blur(28px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 20px 50px rgba(0, 0, 0, 0.1);
+}
+.plan-card.featured {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--primary) 5%, transparent),
+    rgba(255, 255, 255, 0.02)
+  );
+}
+.flow-visual-row {
+  background: rgba(0, 0, 0, 0.2);
+}
+.dashboard {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 48px 64px;
+  min-height: calc(100svh - 88px);
+}
+.dashboard-heading {
+  min-height: 72px;
+  align-items: center;
+}
+.dashboard-heading h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  min-height: 36px;
+  margin: 12px 0;
+}
+.dashboard-note {
+  min-height: 40px;
+  line-height: 1.8;
+  max-width: 1000px;
+}
+.dashboard > nav {
+  min-height: 44px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.dashboard > nav button {
+  font-size: 12px;
+  padding: 10px 15px;
+  transition:
+    background 180ms,
+    border-color 180ms,
+    color 180ms;
+}
+.dashboard section {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(26px);
+  border-color: var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+.workspace-body {
+  min-height: 760px;
+  perspective: 1400px;
+  position: relative;
+}
+.workspace-scene {
+  min-height: 760px;
+  transform-origin: 50% 0%;
+  width: 100%;
+}
+.lookup-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+  gap: 18px;
+  align-items: stretch;
+  min-height: 760px;
+}
+.lookup-query-panel {
+  padding: 28px !important;
+}
+.lookup-query-panel > p {
+  font-size: 13px;
+  line-height: 1.85;
+  max-width: 630px;
+}
+.lookup-query-panel form {
+  margin-top: 12px;
+}
+.lookup-query-panel form .primary {
+  min-height: 45px;
+  font-size: 12px;
+  gap: 10px;
+  padding: 12px 16px;
+  white-space: nowrap;
+}
+.lookup-example {
+  font: 10px var(--mono);
+  color: var(--primary);
+  border: 0;
+  background: none;
+  padding: 14px 0;
+  text-align: left;
+  align-self: flex-start;
+}
+.lookup-guidance {
+  margin-top: auto;
+  padding-top: 42px;
+}
+.lookup-guidance > .eyebrow {
+  font-size: 9px;
+  margin-bottom: 20px;
+}
+.lookup-guidance > div {
+  display: flex;
+  gap: 18px;
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+.lookup-guidance > div > span {
+  font: 10px var(--mono);
+  color: var(--primary);
+  padding-top: 3px;
+}
+.lookup-guidance p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  line-height: 1.8;
+  margin: 0;
+}
+.lookup-guidance strong {
+  display: block;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+.lookup-tracker-panel {
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+}
+.lookup-tracker-panel > .restitution-tracker {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 26px;
+}
+.lookup-tracker-panel .tracker-steps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 5px;
+}
+.lookup-tracker-panel .tracker-header {
+  padding: 27px;
+}
+.lookup-tracker-panel .tracker-amount {
+  font-size: 35px;
+}
+.lookup-tracker-panel .tracker-steps {
+  padding: 27px 27px 8px;
+}
+.lookup-tracker-panel .tracker-step-content {
+  padding-bottom: 26px;
+}
+.lookup-tracker-panel .tracker-step-heading h3 {
+  font-size: 12px;
+}
+.lookup-tracker-panel .tracker-step-content p {
+  font-size: 11px;
+}
+.status-error .tracker-step-icon {
+  color: var(--negative);
+  border-color: color-mix(in srgb, var(--negative) 35%, transparent);
+}
+.status-completed .tracker-step-icon {
+  color: var(--positive);
+}
+.tracker-header,
+.picker-banner {
+  background: rgba(255, 255, 255, 0.015);
+}
+.evidence-layout {
+  gap: 28px;
+}
+.app-shell > .site-footer {
+  max-width: 1304px;
+  width: calc(100% - 96px);
+  margin: 0 auto;
+  padding: 28px 0;
+  position: relative;
+}
+@media (min-width: 1600px) {
+  .mosaic-hero {
+    max-width: 1304px;
+    min-height: 710px;
+  }
+  .mosaic-intro h1.editorial-title {
+    font-size: 68px;
+  }
+}
+@media (max-width: 1100px) {
+  .mosaic-hero {
+    padding: 44px;
+    gap: 30px;
+  }
+  .lookup-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
+  }
+  .lookup-query-panel form {
+    flex-direction: column;
+  }
+  .lookup-query-panel form .primary {
+    align-self: flex-start;
+  }
+  .lifecycle-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+  .lifecycle-badge {
+    margin-left: 0;
+  }
+}
+@media (max-width: 1023px) {
+  .mosaic-hero {
+    grid-template-columns: 1fr;
+    padding: 45px;
+    min-height: 0;
+    max-width: none;
+    gap: 0;
+  }
+  .mosaic-intro h1.editorial-title {
+    font-size: 64px;
+    max-width: 700px;
+  }
+  .mosaic-intro > p {
+    max-width: 620px;
+  }
+  .prompt-area {
+    max-width: none;
+    width: 100%;
+    margin-top: 30px;
+  }
+  .lifecycle-grid {
+    grid-template-columns: 1fr;
+  }
+  .lifecycle-badge {
+    margin-left: auto;
+  }
+  .dashboard {
+    padding: 32px;
+  }
+  .app-shell .site-header {
+    padding: 0 32px;
+  }
+  .lookup-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .lookup-query-panel {
+    padding: 22px !important;
+  }
+  .lookup-tracker-panel .tracker-header,
+  .lookup-tracker-panel .tracker-steps {
+    padding: 22px;
+  }
+  .workspace-body,
+  .workspace-scene {
+    min-height: 780px;
+  }
+  .lookup-grid {
+    min-height: 780px;
+  }
+}
+@media (max-width: 700px) {
+  .lookup-grid {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .lookup-query-panel {
+    min-height: 540px;
+  }
+  .lookup-tracker-panel {
+    min-height: 600px;
+  }
+  .lookup-tracker-panel .tracker-step-content {
+    padding-bottom: 20px;
+  }
+  .workspace-body,
+  .workspace-scene {
+    min-height: 720px;
+  }
+  .dashboard-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .dashboard-note {
+    min-height: 0;
+    margin-top: 18px;
+  }
+  .dashboard > nav {
+    gap: 7px;
+  }
+  .dashboard > nav button {
+    font-size: 11px;
+    padding: 9px 12px;
+  }
+  .lifecycle-section {
+    padding: 30px 23px;
+  }
+}
+@media (max-width: 560px) {
+  .app-shell .site-header {
+    height: 78px;
+    padding: 0 22px;
+  }
+  .mosaic-hero {
+    width: calc(100% - 28px);
+    margin: 12px 14px 0;
+    padding: 30px 22px 23px;
+    border-radius: 23px;
+  }
+  .mosaic-intro h1.editorial-title {
+    font-size: 43px;
+    letter-spacing: -2px;
+    line-height: 1.08;
+  }
+  .mosaic-intro > p {
+    font-size: 13px;
+  }
+  .hero-primary-actions {
+    gap: 8px;
+  }
+  .hero-primary-actions .primary,
+  .hero-primary-actions .subtle {
+    font-size: 10px;
+    padding: 11px 12px;
+    gap: 8px;
+  }
+  .release-pill {
+    font-size: 8px;
+    gap: 5px;
+    padding: 7px 8px;
+    max-width: 100%;
+  }
+  .release-pill svg {
+    width: 10px;
+  }
+  .prompt-area {
+    margin-top: 26px;
+    min-height: 300px;
+  }
+  .prompt-workspace {
+    padding: 18px 14px;
+  }
+  .terminal-controls {
+    align-items: flex-start;
+  }
+  .terminal-controls .eyebrow {
+    letter-spacing: 0.6px;
+    font-size: 7px;
+  }
+  .terminal-controls .text-link {
+    font-size: 9px;
+  }
+  .terminal-scenarios button {
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+  .terminal-tracker .tracker-header {
+    padding: 15px;
+  }
+  .terminal-tracker .tracker-steps {
+    padding: 16px 12px 0;
+  }
+  .terminal-tracker .tracker-footer {
+    padding: 0 12px 16px;
+  }
+  .terminal-tracker .tracker-step {
+    gap: 9px;
+  }
+  .terminal-tracker .tracker-step-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .terminal-tracker .tracker-step-content p {
+    font-size: 9px;
+  }
+  .lifecycle-section {
+    width: calc(100% - 28px);
+    margin-top: 32px;
+    padding: 33px 16px 20px;
+    border-radius: 23px;
+  }
+  .lifecycle-step {
+    padding: 13px 10px;
+  }
+  .lifecycle-title {
+    font-size: 12px;
+  }
+  .lifecycle-description {
+    font-size: 10px;
+  }
+  .lifecycle-badge {
+    margin-left: 0;
+  }
+  .lifecycle-display {
+    padding: 12px;
+  }
+  .dashboard {
+    padding: 30px 16px 45px;
+    min-height: calc(100svh - 78px);
+  }
+  .dashboard-heading h1 {
+    font-size: 27px;
+  }
+  .dashboard-note {
+    font-size: 11px;
+  }
+  .dashboard > nav {
+    margin-bottom: 20px;
+  }
+  .lookup-query-panel {
+    padding: 21px !important;
+  }
+  .lookup-guidance {
+    padding-top: 30px;
+  }
+  .lookup-guidance > div {
+    gap: 12px;
+    padding: 17px 0;
+  }
+  .lookup-guidance p {
+    font-size: 11px;
+  }
+  .lookup-guidance strong {
+    font-size: 12px;
+  }
+  .lookup-query-panel form {
+    gap: 10px;
+  }
+  .lookup-query-panel form .primary {
+    align-self: stretch;
+  }
+  .lookup-example {
+    font-size: 9px;
+    line-height: 1.8;
+  }
+  .lookup-tracker-panel .tracker-header {
+    padding: 23px;
+  }
+  .lookup-tracker-panel .tracker-steps {
+    padding: 23px 20px 6px;
+  }
+  .app-shell > .site-footer {
+    width: calc(100% - 44px);
+    padding: 25px 0;
+  }
+  .evidence-layout {
+    gap: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell {
+    perspective: none;
+  }
+  .workspace-body {
+    perspective: none;
+  }
+}
+
+/* Reserve terminal geometry so preview toggles never shove the hero around. */
+.mosaic-hero .prompt-area {
+  height: 520px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.terminal-tracker {
+  max-height: 480px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 2px 5px 2px 0;
+}
+.terminal-tracker .terminal-controls {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 0;
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  backdrop-filter: blur(20px);
+}
+.app-shell {
+  overflow-x: clip;
+}
+@media (max-width: 560px) {
+  .mosaic-hero .prompt-area {
+    height: 480px;
+    min-height: 480px;
+  }
+  .terminal-tracker {
+    max-height: 440px;
+  }
+}
