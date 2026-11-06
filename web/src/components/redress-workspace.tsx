@@ -1,3 +1,13 @@
+import {
+  isDemo,
+  getIncidentReplayData,
+  getBorrowerVerdict,
+  getLiveMonitorFeed,
+  getVaultReserves,
+  getDemoVaultReserves,
+  useDataStatus,
+  configuredMode,
+} from "../lib/data-service";
 import { downloadEvidence } from "../lib/evidence";
 import { VerdictTracker } from "./features/verdict-tracker";
 import { RestitutionTrackerCard } from "./ui/tracker-card-1";
@@ -16,13 +26,7 @@ import {
 } from "lucide-react";
 import type { FrontendVerdict } from "../../../shared/types";
 import { evaluate, format, units, UNIT } from "../../../shared/math";
-import {
-  isDemo,
-  isAddress,
-  loadVerdicts,
-  shorten,
-  transactionUrl,
-} from "../lib/data";
+import { isAddress, shorten, transactionUrl } from "../lib/data";
 export type View = "replay" | "lookup" | "monitor" | "incidents" | "vault";
 export const views: { id: View; label: string }[] = [
   { id: "replay", label: "Replay Theater" },
@@ -221,6 +225,7 @@ export function RedressWorkspace({
   onNavigate: (v: View) => void;
   account?: string;
 }) {
+  const dataStatus = useDataStatus();
   const surfaceMotion = useSurfaceMotion();
   const bodyRef = useRef<HTMLDivElement>(null);
   const [records, setRecords] = useState<FrontendVerdict[]>([]),
@@ -233,7 +238,7 @@ export function RedressWorkspace({
     setLoading(true);
     setError("");
     setSelected(null);
-    loadVerdicts({}, controller.signal)
+    getIncidentReplayData(controller.signal)
       .then((rows) => {
         setRecords(rows);
         setLoading(false);
@@ -269,11 +274,7 @@ export function RedressWorkspace({
           <span className="eyebrow">REDRESS / WINDOW OBSERVER</span>
           <h1>{views.find((v) => v.id === view)?.label}</h1>
         </div>
-        <Badge>
-          {isDemo
-            ? "Demo data · synthetic examples"
-            : "Backend connected · verify provenance"}
-        </Badge>
+        <Badge>{dataStatus.message}</Badge>
       </div>
       <p className="dashboard-note">
         Evidence-based restitution for oracle-driven liquidations. Testnet and
@@ -282,6 +283,18 @@ export function RedressWorkspace({
           ? "No CRE watcher, Arkiv query or real payout is running."
           : "Records are supplied by the configured service; this UI does not execute payouts."}
       </p>
+      {dataStatus.mode === "fallback" && (
+        <p className="text-xs text-primary" role="status">
+          Live integration unavailable. Displaying synthetic demo data, not a
+          live result.{" "}
+          <button
+            className="text-link"
+            onClick={() => setVersion((v) => v + 1)}
+          >
+            Retry live read
+          </button>
+        </p>
+      )}
       <nav className="mb-5 flex flex-wrap gap-2" aria-label="Redress workspace">
         {views.map((v) => (
           <button
@@ -404,8 +417,8 @@ function Replay({
         </p>
         <p className="mt-3 text-xs leading-6 text-muted-foreground">
           10 March 2026 is the PRD’s target incident. This{" "}
-          {isDemo ? "four-record constructed example" : "backend dataset"} is
-          not a faithful mainnet-fork replay. Real incident verification and the
+          {isDemo ? "constructed example dataset" : "backend dataset"} is not a
+          faithful mainnet-fork replay. Real incident verification and the
           34-account scorecard remain pending.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -638,8 +651,8 @@ function Lookup({
     request.current = controller;
     setBusy(true);
     try {
-      const result = await loadVerdicts(
-        { user: address.trim() },
+      const result = await getBorrowerVerdict(
+        address.trim(),
         controller.signal,
       );
       if (!controller.signal.aborted) setRows(result);
@@ -918,14 +931,14 @@ function Monitor({
     [error, setError] = useState(""),
     [refresh, setRefresh] = useState(0);
   useEffect(() => {
-    if (isDemo) return;
+    if (configuredMode === "mock") return;
     const controller = new AbortController();
     let running = false;
     const poll = async () => {
       if (running) return;
       running = true;
       try {
-        const rows = await loadVerdicts({}, controller.signal);
+        const rows = await getLiveMonitorFeed(controller.signal);
         if (!controller.signal.aborted) {
           setRecords(rows);
           setError("");
@@ -994,9 +1007,31 @@ function Monitor({
 }
 function Vault({ records }: { records: FrontendVerdict[] }) {
   const [deviation, setDeviation] = useState(2.85),
-    [bond, setBond] = useState("250"),
-    [reserve, setReserve] = useState("1000"),
+    [bond, setBond] = useState(format(getDemoVaultReserves().operatorBond)),
+    [reserve, setReserve] = useState(
+      format(getDemoVaultReserves().protocolReserve),
+    ),
     [epoch, setEpoch] = useState("20");
+  const edited = useRef(false);
+  const [capitalNote, setCapitalNote] = useState(
+    "Illustrative capital · not funded",
+  );
+  useEffect(() => {
+    const controller = new AbortController();
+    getVaultReserves(controller.signal)
+      .then((value) => {
+        if (controller.signal.aborted || edited.current) return;
+        setBond(format(value.operatorBond, 18));
+        setReserve(format(value.protocolReserve, 18));
+        setCapitalNote(
+          value.provenance === "chain"
+            ? `Sepolia token balances at block ${value.blockNumber}; not a solvency guarantee`
+            : "Illustrative capital · not funded",
+        );
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   let bondWei = 0n,
     reserveWei = 0n,
     invalid = false;
@@ -1042,25 +1077,33 @@ function Vault({ records }: { records: FrontendVerdict[] }) {
   const fromReserve = payable - fromBond;
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <Panel title="Operator bond · illustrative">
+      <Panel title="Operator bond · scenario">
         <label className="text-xs text-muted-foreground">
           WETH
           <input
             aria-label="Operator bond WETH"
             value={bond}
-            onChange={(e) => setBond(e.target.value)}
+            onChange={(e) => {
+              edited.current = true;
+              setCapitalNote("Edited scenario capital · not a live balance");
+              setBond(e.target.value);
+            }}
             className="mt-3 w-full rounded-xl border border-border bg-background p-3 font-mono"
             inputMode="decimal"
           />
         </label>
       </Panel>
-      <Panel title="Shared reserve · illustrative">
+      <Panel title="Shared reserve · scenario">
         <label className="text-xs text-muted-foreground">
           WETH
           <input
             aria-label="Shared reserve WETH"
             value={reserve}
-            onChange={(e) => setReserve(e.target.value)}
+            onChange={(e) => {
+              edited.current = true;
+              setCapitalNote("Edited scenario capital · not a live balance");
+              setReserve(e.target.value);
+            }}
             className="mt-3 w-full rounded-xl border border-border bg-background p-3 font-mono"
             inputMode="decimal"
           />
@@ -1079,6 +1122,7 @@ function Vault({ records }: { records: FrontendVerdict[] }) {
         </label>
       </Panel>
       <Panel title="Treasury top-up">
+        <p className="mb-2 text-xs text-muted-foreground">{capitalNote}</p>
         <p className="font-mono text-xl">Disabled</p>
         <p className="mt-3 text-xs text-muted-foreground">
           No fund, deposit, approval or signing action is exposed.

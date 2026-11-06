@@ -51,3 +51,40 @@ export interface FrontendVerdict extends VerdictReport {
   position: PositionInput;
   sources: { name: string; price: string; status: string }[];
 }
+export type VerdictStatus = VerdictType;
+/** Compatibility/display DTO only. Settlement arithmetic must use the exact-string types above. */
+export interface LiquidationVerdict {
+  liquidationTx: `0x${string}`;
+  logIndex: number;
+  blockNumber: number;
+  user: `0x${string}`;
+  collateralAsset: string;
+  debtAsset: string;
+  debtToCover: string;
+  collateralSeized: string;
+  protocolOraclePrice: number;
+  independentBandLow: number;
+  independentBandHigh: number;
+  verdict: VerdictStatus;
+  redressAmountWETH: number;
+  evidenceHash: string;
+  payoutTxHash?: `0x${string}`;
+  arkivEntityKey?: string;
+}
+export interface IncidentSummary {
+  incidentId: string;
+  protocol: string;
+  date: string;
+  targetAsset: string;
+  totalLiquidatedCollateral: string;
+  affectedAccountsCount: number;
+  totalRedressPaidWETH: number;
+  oracleDeviationPct: number;
+}
+export interface VaultReserves {
+  operatorBond: string;
+  protocolReserve: string;
+  recoveredMev: string;
+  provenance: "synthetic" | "chain";
+  blockNumber?: string;
+}

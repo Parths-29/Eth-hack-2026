@@ -18,9 +18,9 @@ import {
   ShieldAlert,
   ArrowRight,
 } from "lucide-react";
-import { DEMO_RECORDS } from "../../../../shared/demo";
+import { getDemoScenario } from "../../lib/data-service";
 import { evaluate, format } from "../../../../shared/math";
-const sample = DEMO_RECORDS[0];
+const sample = getDemoScenario();
 const calculation = evaluate(sample.position);
 export interface RestitutionFeature {
   step: string;

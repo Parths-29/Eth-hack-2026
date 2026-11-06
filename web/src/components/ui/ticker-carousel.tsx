@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import type { View } from "../redress-workspace";
-import { DEMO_RECORDS } from "../../../../shared/demo";
+import { getDemoScenario } from "../../lib/data-service";
 import { format } from "../../../../shared/math";
 export interface TickerItem {
   id: string;
@@ -21,7 +21,7 @@ export interface TickerItem {
   actionLabel: string;
   view: View;
 }
-const sample = DEMO_RECORDS[0];
+const sample = getDemoScenario();
 const items: TickerItem[] = [
   {
     id: "aave",

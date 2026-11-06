@@ -2,10 +2,11 @@ import { downloadEvidence } from "../lib/evidence";
 import { AnimatePresence, motion } from "motion/react";
 import { useSurfaceMotion } from "./ui/page-transition";
 import { VerdictTracker } from "./features/verdict-tracker";
-import { DEMO_RECORDS } from "../../../shared/demo";
+import { getDemoScenario } from "../lib/data-service";
 import type { FrontendVerdict } from "../../../shared/types";
 import type { View } from "./redress-workspace";
-import { isAddress, loadVerdicts } from "../lib/data";
+import { isAddress } from "../lib/data";
+import { getBorrowerVerdict } from "../lib/data-service";
 import { GradientWave } from "./ui/gradient-wave";
 import { TickerCarousel } from "./ui/ticker-carousel";
 import { FeatureSteps } from "./features/feature-section";
@@ -134,7 +135,7 @@ export function Landing({
     terminalRequest.current?.abort();
     setNotice("");
     if (category === "Replay") {
-      setTerminalRecord(DEMO_RECORDS[0]);
+      setTerminalRecord(getDemoScenario());
       setTerminalBusy(false);
       return;
     }
@@ -150,10 +151,7 @@ export function Landing({
       terminalRequest.current = controller;
       setTerminalBusy(true);
       try {
-        const rows = await loadVerdicts(
-          { user: prompt.trim() },
-          controller.signal,
-        );
+        const rows = await getBorrowerVerdict(prompt.trim(), controller.signal);
         if (controller.signal.aborted) return;
         if (rows[0]) setTerminalRecord(rows[0]);
         else
@@ -228,13 +226,13 @@ export function Landing({
                 >
                   <button
                     aria-pressed={terminalRecord.verdict === "WRONGFUL"}
-                    onClick={() => setTerminalRecord(DEMO_RECORDS[0])}
+                    onClick={() => setTerminalRecord(getDemoScenario())}
                   >
                     Wrongful example
                   </button>
                   <button
                     aria-pressed={terminalRecord.verdict === "VALID"}
-                    onClick={() => setTerminalRecord(DEMO_RECORDS[2])}
+                    onClick={() => setTerminalRecord(getDemoScenario("valid"))}
                   >
                     Safe rejection
                   </button>

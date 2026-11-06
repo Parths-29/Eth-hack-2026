@@ -102,3 +102,12 @@ The pill carousel below the lifecycle section is a labelled demonstration feed, 
 ## Laptop product-screen fit
 
 After-home screens now use an application viewport on widths >=1024px: a fixed-height header, compact title/tabs, and an accessible internally scrollable content region. Removed the 760–780px body/lookup minimums that previously exceeded laptop height before navigation was counted. Lookup panels fit the content region; long tracker inputs and evidence remain reachable by scrolling. Internal scroll resets on tab changes. The marketing footer is omitted on desktop product screens. Wallet connect uses a compact avatar/header with a bounded scrollable picker, and focuses without scrolling the shell. Smaller devices retain normal page scrolling. Tests cover connect, replay, lookup, monitor, incidents and vault at 1366×768, 1280×720 and 1280×600.
+
+
+## Mock-to-live bridge (latest)
+
+The latest adapter supersedes the earlier "no direct SDK read" implementation notes above. See [the integration handoff](shared/ADAPTER.md) for modes, env variables, the pinned Arkiv v1 bytes-record schema, Viem capital-holder reads, exact amount types and honest fallback behavior. Existing UI components consume `data-service.ts`; mock references are isolated there. No UI styling was changed by this integration pass.
+
+The required Web3/UI packages are installed and pinned, `@/` aliases and `cn` are configured, and `web/components.json` supplies shadcn path metadata without regenerating the current theme. Both Motion package names are installed as requested; existing UI imports continue using `motion/react`.
+
+Still required from teammates: verified historical incident export, trusted publisher and actual Arkiv records, deployed Sepolia token/capital addresses, the real vault ABI and CRE evidence. Prewiring an SDK does not by itself satisfy sponsor read/write criteria.
