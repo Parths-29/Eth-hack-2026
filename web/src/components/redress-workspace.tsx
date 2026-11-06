@@ -222,6 +222,7 @@ export function RedressWorkspace({
   account?: string;
 }) {
   const surfaceMotion = useSurfaceMotion();
+  const bodyRef = useRef<HTMLDivElement>(null);
   const [records, setRecords] = useState<FrontendVerdict[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -245,7 +246,22 @@ export function RedressWorkspace({
       });
     return () => controller.abort();
   }, [version]);
-  useEffect(() => setSelected(null), [view]);
+  useEffect(() => {
+    setSelected(null);
+    bodyRef.current?.scrollTo(0, 0);
+  }, [view]);
+  useEffect(() => {
+    if (selected)
+      requestAnimationFrame(() =>
+        document.querySelector(".verdict-details")?.scrollIntoView({
+          block: "start",
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+            .matches
+            ? "instant"
+            : "smooth",
+        }),
+      );
+  }, [selected]);
   return (
     <motion.main className="dashboard" {...surfaceMotion}>
       <div className="dashboard-heading">
@@ -281,7 +297,13 @@ export function RedressWorkspace({
           </button>
         ))}
       </nav>
-      <div className="workspace-body">
+      <div
+        ref={bodyRef}
+        className="workspace-body"
+        role="region"
+        aria-label="Workspace content"
+        tabIndex={0}
+      >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={view} className="workspace-scene" {...surfaceMotion}>
             {loading ? (
@@ -321,19 +343,19 @@ export function RedressWorkspace({
             )}
           </motion.div>
         </AnimatePresence>
+        {selected && (
+          <div className="mt-3 verdict-details">
+            <Panel title="Verdict & evidence">
+              <div className="mb-4">
+                <button className="text-link" onClick={() => setSelected(null)}>
+                  Close details ×
+                </button>
+              </div>
+              <Evidence key={selected.id} record={selected} />
+            </Panel>
+          </div>
+        )}
       </div>
-      {selected && (
-        <div className="mt-3">
-          <Panel title="Verdict & evidence">
-            <div className="mb-4">
-              <button className="text-link" onClick={() => setSelected(null)}>
-                Close details ×
-              </button>
-            </div>
-            <Evidence key={selected.id} record={selected} />
-          </Panel>
-        </div>
-      )}
     </motion.main>
   );
 }

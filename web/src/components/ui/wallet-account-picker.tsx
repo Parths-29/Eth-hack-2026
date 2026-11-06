@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, Check, Copy, X } from "lucide-react";
 export type Account = {
@@ -101,6 +101,9 @@ export function WalletAccountPicker({
   onRetry,
   onSelect,
 }: Props) {
+  useEffect(() => {
+    closeRef.current?.focus({ preventScroll: true });
+  }, [closeRef]);
   return (
     <motion.section
       initial={{ y: 20, opacity: 0 }}
@@ -116,7 +119,6 @@ export function WalletAccountPicker({
         </span>
         <button
           ref={closeRef}
-          autoFocus
           className="icon-button"
           aria-label="Close account picker"
           onClick={onClose}

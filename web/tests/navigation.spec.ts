@@ -70,7 +70,7 @@ test("lookup fills shared shell and shows a tracker as soon as a verdict is foun
     await page
       .locator(".lookup-grid")
       .evaluate((e) => e.getBoundingClientRect().height),
-  ).toBeGreaterThan(700);
+  ).toBeGreaterThan(300);
 });
 test("rapid navigation resolves to the final scene with reduced motion", async ({
   page,

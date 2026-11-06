@@ -1,0 +1,73 @@
+/* Product screens use an application viewport; marketing pages keep document scrolling. */
+@media(min-width:1024px){
+ .app-shell[data-screen="workspace"],.app-shell[data-screen="connect"]{height:100svh;min-height:0;overflow:hidden}
+ .app-shell[data-screen="workspace"]>.site-header,.app-shell[data-screen="connect"]>.site-header{height:72px;min-height:72px;flex-shrink:0}
+ .app-shell[data-screen="workspace"]>.site-footer,.app-shell[data-screen="connect"]>.site-footer{display:none}
+ main.dashboard{height:calc(100svh - 72px);max-height:calc(100svh - 72px);min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;padding:20px 32px 22px}
+ .dashboard-heading{min-height:56px;flex-shrink:0}
+ .dashboard-heading h1{font-size:30px;line-height:1.2;margin:8px 0;min-height:36px}
+ .dashboard-note{min-height:0;font-size:12px;line-height:1.6;margin:8px 0 14px;flex-shrink:0}
+ .dashboard>nav{min-height:40px;margin-bottom:16px;gap:8px;flex-shrink:0}
+ .dashboard>nav button{font-size:13px;padding:9px 14px}
+ .workspace-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable;padding:3px 8px 8px 3px;perspective:none}
+ .workspace-scene{min-height:100%;height:auto;width:100%}
+ .workspace-body> .verdict-details{scroll-margin-top:8px}
+ .workspace-scene>.grid{align-content:start}
+ .lookup-grid{height:100%;min-height:0;align-items:stretch}
+ .workspace-scene:has(>.lookup-grid){height:100%}
+ .lookup-query-panel{height:100%;min-height:0;padding:22px!important;overflow-y:auto;scrollbar-width:thin}
+ .lookup-query-panel>p{font-size:13px;line-height:1.7;margin-bottom:16px}
+ .lookup-query-panel form{margin-top:0}
+ .lookup-guidance{margin-top:20px;padding-top:12px}
+ .lookup-guidance>.eyebrow{font-size:9px;margin-bottom:12px}
+ .lookup-guidance>div{padding:13px 0;gap:14px}
+ .lookup-guidance p{font-size:12px;line-height:1.65}
+ .lookup-guidance strong{font-size:13px;margin-bottom:3px}
+ .lookup-example{font-size:11px;padding:12px 0}
+ .lookup-tracker-panel{height:100%;min-height:0;overflow:hidden}
+ .lookup-tracker-panel>.restitution-tracker{height:100%;min-height:0}
+ .lookup-tracker-panel .tracker-header{padding:18px 22px;flex-shrink:0}
+ .lookup-tracker-panel .tracker-address{margin:9px 0 12px}
+ .lookup-tracker-panel .tracker-amount{font-size:30px}
+ .lookup-tracker-panel .tracker-provenance{font-size:11px;margin-top:7px}
+ .lookup-tracker-panel .tracker-steps{min-height:0;overflow:auto;scrollbar-width:thin;justify-content:flex-start;padding:18px 22px 0;gap:0}
+ .lookup-tracker-panel .tracker-step-content{padding-bottom:20px}
+ .lookup-tracker-panel .tracker-step-heading h3{font-size:13px}
+ .lookup-tracker-panel .tracker-step-content p{font-size:12px;line-height:1.6}
+ .lookup-tracker-panel .tracker-footer{flex-shrink:0;padding:12px 20px 18px}
+ main.connect-page{height:calc(100svh - 72px);min-height:0;max-height:calc(100svh - 72px);padding:18px 24px;overflow:hidden;gap:0}
+ .connect-heading{margin:0 auto 16px;flex-shrink:0}
+ .connect-heading h1{font-size:28px;margin:10px 0 6px}
+ .connect-heading p{font-size:12px;margin:5px 0}
+ .connect-page .picker{max-height:calc(100svh - 220px);min-height:0;overflow-y:auto;scrollbar-width:thin;overscroll-behavior:contain;flex-shrink:1}
+ .connect-page .picker-banner{height:82px;padding:14px}
+ .connect-page .main-avatar{height:104px;width:104px;margin-top:-46px}
+ .connect-page .main-avatar svg{width:100px;height:100px}
+ .connect-page .picker-content{padding:13px 24px 20px}
+ .connect-page .picker-content h2{font-size:24px;margin-bottom:7px}
+ .connect-page .copy-status{height:10px;margin:2px 0}
+ .connect-page .badges{margin:7px 0 10px}
+ .connect-page .balance{font-size:13px;margin:10px 0}
+ .connect-page .choose-label{font-size:12px;margin:15px 0 13px}
+ .connect-page .continue{margin-top:19px;min-height:44px;font-size:13px}
+ .connect-page .wallet-notice{font-size:11px;padding:13px 20px}
+ .connect-page .notice-links,.connect-page .notice-links button{font-size:11px}
+ .connect-foot{font-size:9px;margin:14px 0 0;flex-shrink:0}
+}
+@media(min-width:1024px) and (max-height:700px){
+ main.dashboard{padding:14px 28px 16px}
+ .dashboard-heading{min-height:50px}.dashboard-heading h1{font-size:27px;margin:6px 0}
+ .dashboard-note{font-size:11px;margin:5px 0 10px}.dashboard>nav{margin-bottom:12px}
+ .lookup-query-panel{padding:18px!important}.lookup-guidance{margin-top:12px;padding-top:8px}
+ .lookup-guidance>div{padding:11px 0}.lookup-tracker-panel .tracker-header{padding:16px 19px}
+ .lookup-tracker-panel .tracker-amount{font-size:27px}
+}
+/* Stacked devices retain natural page scrolling and no nested fixed-height panels. */
+@media(max-width:1023px){
+ .workspace-body,.workspace-scene{min-height:0;height:auto;overflow:visible}
+ .lookup-grid{min-height:0;height:auto}
+ .lookup-query-panel{min-height:0}.lookup-guidance{margin-top:32px;padding-top:0}
+ .lookup-tracker-panel{min-height:0}.lookup-tracker-panel>.restitution-tracker{height:auto}
+ .lookup-tracker-panel .tracker-steps{justify-content:flex-start}
+ main.connect-page{min-height:calc(100svh - 88px);height:auto}
+}

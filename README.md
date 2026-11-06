@@ -97,3 +97,8 @@ The pill carousel below the lifecycle section is a labelled demonstration feed, 
 ## Marketing typography
 
 `marketing.css` supplies the larger responsive type hierarchy: laptop hero headline around 58–69px, 42–62px section headings, 18px marketing body copy, readable lifecycle descriptions, stronger coverage/ticker typography, and larger wallet/workspace labels. The lifecycle visual is sticky alongside desktop steps and stays non-glass. Short laptop viewports use a bounded scale to keep hero actions in view; small screens use a separate readable scale rather than shrinking the desktop layout.
+
+
+## Laptop product-screen fit
+
+After-home screens now use an application viewport on widths >=1024px: a fixed-height header, compact title/tabs, and an accessible internally scrollable content region. Removed the 760–780px body/lookup minimums that previously exceeded laptop height before navigation was counted. Lookup panels fit the content region; long tracker inputs and evidence remain reachable by scrolling. Internal scroll resets on tab changes. The marketing footer is omitted on desktop product screens. Wallet connect uses a compact avatar/header with a bounded scrollable picker, and focuses without scrolling the shell. Smaller devices retain normal page scrolling. Tests cover connect, replay, lookup, monitor, incidents and vault at 1366×768, 1280×720 and 1280×600.

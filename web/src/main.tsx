@@ -13,6 +13,7 @@ import "./polish.css";
 import "./glass.css";
 import "./midnight.css";
 import "./marketing.css";
+import "./workspace-fit.css";
 import { useSurfaceMotion } from "./components/ui/page-transition";
 
 type Provider = {
@@ -111,7 +112,7 @@ function App() {
     if (page !== "connect") requestId.current++;
   }, [page]);
   useEffect(() => {
-    if (page === "connect") closeRef.current?.focus();
+    if (page === "connect") closeRef.current?.focus({preventScroll:true});
   }, [page]);
   const close = () => {
     requestId.current++;
