@@ -12,6 +12,7 @@ import "./globals.css";
 import "./polish.css";
 import "./glass.css";
 import "./midnight.css";
+import "./marketing.css";
 import { useSurfaceMotion } from "./components/ui/page-transition";
 
 type Provider = {

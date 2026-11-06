@@ -1,0 +1,679 @@
+/* Marketing type scale: readable at laptop distance, with distinct section hierarchy. */
+.mosaic-landing {
+  --marketing-body: 18px;
+  --marketing-label: 12px;
+}
+.app-shell[data-screen="landing"] .brand {
+  font-size: 25px;
+}
+.app-shell[data-screen="landing"] .site-header nav a {
+  font-size: 15px;
+}
+.app-shell[data-screen="landing"] .site-header .compact {
+  font-size: 14px;
+  min-height: 44px;
+  padding: 12px 20px;
+}
+.mosaic-intro h1.editorial-title {
+  font-size: clamp(54px, 4.5vw, 76px);
+  letter-spacing: -3px;
+  line-height: 1.05;
+  font-weight: 650;
+}
+.mosaic-intro > p {
+  font-size: 18px;
+  line-height: 1.65;
+  max-width: 590px;
+}
+.release-pill {
+  font-size: 12px;
+  padding: 9px 13px;
+  line-height: 1.5;
+}
+.hero-primary-actions .primary,
+.hero-primary-actions .subtle {
+  font-size: 15px;
+  min-height: 49px;
+  padding: 13px 19px;
+  gap: 13px;
+}
+.prompt-workspace textarea {
+  font-size: 17px;
+  line-height: 1.65;
+  min-height: 110px;
+}
+.category-chips button {
+  font-size: 12px;
+  padding: 8px 11px;
+  gap: 7px;
+}
+.category-chips button svg {
+  width: 15px;
+  height: 15px;
+}
+.model-trigger {
+  font-size: 13px;
+  gap: 9px;
+}
+.model-options > button {
+  font-size: 14px;
+}
+.model-options small {
+  font-size: 12px;
+}
+.model-options > p {
+  font-size: 11px;
+}
+.submit-prompt {
+  width: 39px;
+  height: 39px;
+}
+.prompt-help {
+  font-size: 12px;
+}
+.workspace-disclaimer {
+  font-size: 10px;
+  line-height: 1.6;
+}
+.hero-caption {
+  font-size: 10px;
+  letter-spacing: 1.3px;
+}
+.center-heading h2 {
+  font-size: clamp(42px, 4.2vw, 62px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 20px auto;
+}
+.center-heading p {
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 700px;
+}
+.section-kicker {
+  font-size: 12px;
+  padding: 8px 12px;
+  letter-spacing: 1px;
+}
+.concept-label {
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 14px;
+}
+.lifecycle-grid {
+  align-items: start;
+  gap: 40px;
+}
+.lifecycle-step {
+  padding: 20px;
+  gap: 16px;
+}
+.lifecycle-title {
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.lifecycle-number {
+  font-size: 12px;
+}
+.lifecycle-badge {
+  font-size: 10px;
+  padding: 5px 7px;
+}
+.lifecycle-description {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-top: 8px;
+}
+.lifecycle-icon {
+  width: 42px;
+  height: 42px;
+}
+.lifecycle-icon svg {
+  width: 21px;
+  height: 21px;
+}
+.lifecycle-controls {
+  font-size: 11px;
+  line-height: 1.7;
+}
+.lifecycle-display {
+  position: sticky;
+  top: 32px;
+  height: 490px;
+  padding: 26px;
+}
+.flow-visual-label {
+  font-size: 11px;
+}
+.flow-visual h3 {
+  font-size: 31px;
+}
+.flow-visual-row {
+  font-size: 12px;
+  padding: 13px;
+}
+.flow-visual p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.flow-visual code {
+  font-size: 12px;
+}
+.flow-amount {
+  font-size: 46px;
+}
+.flow-amount small {
+  font-size: 15px;
+}
+.visual-emblem {
+  width: 33px;
+  height: 33px;
+}
+.pricing-section .center-heading p {
+  font-size: 18px;
+}
+.billing-switch button {
+  font-size: 14px;
+  padding: 10px 19px;
+}
+.billing-switch button span {
+  font-size: 11px;
+}
+.plan-card {
+  padding: 32px 27px 27px;
+}
+.plan-card h3 {
+  font-size: 24px;
+  line-height: 1.3;
+}
+.plan-description {
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 81px;
+  max-width: none;
+}
+.plan-price > span:first-child {
+  font-size: 58px;
+}
+.plan-price > span:last-child {
+  font-size: 14px;
+}
+.billing-caption {
+  font-size: 12px;
+  line-height: 1.7;
+  min-height: 22px;
+}
+.pricing-section .plan-cta {
+  font-size: 14px;
+  padding: 14px 10px;
+}
+.plan-card li {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.plan-card li svg {
+  width: 15px;
+  height: 15px;
+}
+.plan-card ul {
+  gap: 14px;
+  min-height: 174px;
+}
+.plan-demo {
+  font-size: 11px;
+  line-height: 1.7;
+}
+.ticker-heading .eyebrow {
+  font-size: 12px;
+}
+.ticker-heading p {
+  font-size: 13px;
+}
+.ticker-protocol {
+  font-size: 16px;
+}
+.ticker-protocol small {
+  font-size: 10px;
+}
+.ticker-value {
+  font-size: 14px;
+}
+.ticker-value small {
+  font-size: 11px;
+}
+.ticker-action {
+  font-size: 12px;
+}
+.ticker-pill {
+  padding: 18px 24px;
+  gap: 16px;
+}
+.ticker-icon {
+  width: 38px;
+  height: 38px;
+}
+.mosaic-outro h2 {
+  font-size: 48px;
+  line-height: 1.15;
+}
+.mosaic-outro p {
+  font-size: 18px;
+  line-height: 1.7;
+}
+.mosaic-outro .primary {
+  font-size: 15px;
+  min-height: 48px;
+  padding: 13px 21px;
+}
+.wallet-secondary {
+  font-size: 13px;
+  margin-top: 22px;
+}
+.site-footer > span {
+  font-size: 12px;
+}
+.site-footer .mono {
+  font-size: 10px;
+}
+@media (min-width: 1024px) and (max-height: 700px) {
+  .mosaic-intro h1.editorial-title {
+    font-size: clamp(48px, 4.2vw, 60px);
+    margin: 18px 0;
+  }
+  .mosaic-intro > p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .release-pill {
+    font-size: 11px;
+    padding: 7px 10px;
+  }
+  .hero-primary-actions .primary,
+  .hero-primary-actions .subtle {
+    font-size: 14px;
+    min-height: 44px;
+    padding: 11px 15px;
+  }
+  .prompt-workspace textarea {
+    font-size: 16px;
+    min-height: 78px;
+  }
+  .category-chips button {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+  .prompt-help {
+    font-size: 11px;
+  }
+  .workspace-disclaimer {
+    font-size: 9px;
+  }
+  .hero-caption {
+    font-size: 9px;
+  }
+}
+@media (max-width: 1100px) {
+  .lifecycle-title {
+    font-size: 17px;
+  }
+  .lifecycle-step {
+    padding: 18px 15px;
+  }
+  .lifecycle-description {
+    font-size: 14px;
+  }
+  .lifecycle-grid {
+    gap: 25px;
+  }
+  .flow-visual-row {
+    font-size: 11px;
+    padding: 11px;
+  }
+  .flow-visual h3 {
+    font-size: 28px;
+  }
+}
+@media (max-width: 1023px) {
+  .mosaic-intro h1.editorial-title {
+    font-size: 68px;
+    max-width: 700px;
+  }
+  .mosaic-intro > p {
+    font-size: 18px;
+  }
+  .lifecycle-display {
+    position: static;
+    height: 470px;
+  }
+  .lifecycle-description {
+    font-size: 16px;
+  }
+  .lifecycle-title {
+    font-size: 19px;
+  }
+  .plan-description {
+    min-height: 0;
+  }
+  .plan-card ul {
+    min-height: 0;
+  }
+}
+@media (max-width: 560px) {
+  .app-shell[data-screen="landing"] .brand {
+    font-size: 21px;
+  }
+  .app-shell[data-screen="landing"] .site-header .compact {
+    font-size: 12px;
+    padding: 10px 13px;
+    min-height: 40px;
+  }
+  .mosaic-intro h1.editorial-title {
+    font-size: 45px;
+    letter-spacing: -2px;
+    line-height: 1.07;
+  }
+  .mosaic-intro > p {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .release-pill {
+    font-size: 10px;
+    padding: 7px 9px;
+  }
+  .release-pill svg {
+    width: 11px;
+  }
+  .hero-primary-actions .primary,
+  .hero-primary-actions .subtle {
+    font-size: 13px;
+    gap: 8px;
+    padding: 12px;
+    min-height: 45px;
+  }
+  .prompt-workspace textarea {
+    font-size: 15px;
+    min-height: 110px;
+  }
+  .category-chips button {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+  .category-chips button svg {
+    width: 13px;
+    height: 13px;
+  }
+  .model-trigger {
+    font-size: 12px;
+  }
+  .prompt-help {
+    font-size: 11px;
+  }
+  .workspace-disclaimer {
+    font-size: 9px;
+  }
+  .hero-caption {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .center-heading h2 {
+    font-size: 38px;
+    letter-spacing: -1.3px;
+  }
+  .center-heading p,
+  .pricing-section .center-heading p {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .section-kicker {
+    font-size: 10px;
+  }
+  .concept-label {
+    font-size: 10px;
+  }
+  .lifecycle-step {
+    padding: 17px 12px;
+    gap: 11px;
+  }
+  .lifecycle-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .lifecycle-title {
+    font-size: 16px;
+  }
+  .lifecycle-description {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .lifecycle-number {
+    font-size: 11px;
+  }
+  .lifecycle-badge {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+  .lifecycle-controls {
+    font-size: 10px;
+  }
+  .lifecycle-display {
+    height: 480px;
+    padding: 18px;
+  }
+  .flow-visual h3 {
+    font-size: 27px;
+  }
+  .flow-visual-row {
+    font-size: 11px;
+    padding: 11px 9px;
+  }
+  .flow-visual p {
+    font-size: 12px;
+  }
+  .flow-visual-label {
+    font-size: 10px;
+  }
+  .flow-visual code {
+    font-size: 11px;
+  }
+  .flow-amount {
+    font-size: 39px;
+  }
+  .plan-card {
+    padding: 28px 24px;
+  }
+  .plan-card h3 {
+    font-size: 23px;
+  }
+  .plan-description {
+    font-size: 16px;
+  }
+  .plan-price > span:first-child {
+    font-size: 52px;
+  }
+  .plan-card li {
+    font-size: 15px;
+  }
+  .plan-demo {
+    font-size: 11px;
+  }
+  .ticker-protocol {
+    font-size: 14px;
+  }
+  .ticker-protocol small {
+    font-size: 9px;
+  }
+  .ticker-value {
+    font-size: 12px;
+  }
+  .ticker-value small {
+    font-size: 10px;
+  }
+  .ticker-action {
+    font-size: 11px;
+  }
+  .ticker-pill {
+    padding: 16px 19px;
+  }
+  .mosaic-outro h2 {
+    font-size: 35px;
+  }
+  .mosaic-outro p {
+    font-size: 16px;
+  }
+  .mosaic-outro .primary {
+    font-size: 14px;
+  }
+  .wallet-secondary {
+    font-size: 12px;
+  }
+  .site-footer > span {
+    font-size: 10px;
+  }
+  .site-footer .mono {
+    font-size: 8px;
+  }
+}
+/* Carry readable type into the product screens without enlarging compact data charts. */
+.dashboard-heading h1 {
+  font-size: 34px;
+  line-height: 1.2;
+}
+.dashboard-note {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.dashboard > nav button {
+  font-size: 14px;
+  padding: 11px 16px;
+}
+.dashboard section > h2 {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.dashboard .text-xs {
+  font-size: 13px;
+  line-height: 1.65;
+}
+.dashboard .tag {
+  font-size: 11px;
+  padding: 6px 10px;
+}
+.dashboard .text-sm {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.dashboard input,
+.dashboard select {
+  font-size: 14px;
+}
+.dashboard .tracker-step-heading h3 {
+  font-size: 14px;
+}
+.dashboard .tracker-step-content p {
+  font-size: 12px;
+  line-height: 1.75;
+}
+.dashboard .tracker-step-heading > span {
+  font-size: 10px;
+}
+.dashboard .tracker-header > p,
+.dashboard .tracker-provenance {
+  font-size: 12px;
+}
+.dashboard .tracker-status {
+  font-size: 11px;
+}
+.dashboard .tracker-address {
+  font-size: 11px;
+}
+.dashboard .tracker-footer .primary {
+  font-size: 13px;
+}
+.lookup-query-panel > p,
+.lookup-guidance p {
+  font-size: 14px;
+}
+.lookup-guidance strong {
+  font-size: 15px;
+}
+.lookup-example {
+  font-size: 12px;
+}
+.lookup-query-panel form .primary {
+  font-size: 14px;
+}
+.connect-heading p {
+  font-size: 14px;
+}
+.picker-content h2 {
+  font-size: 27px;
+}
+.choose-label,
+.balance {
+  font-size: 14px;
+}
+.picker-content .tag {
+  font-size: 11px;
+}
+.address {
+  font-size: 12px;
+}
+.wallet-notice {
+  font-size: 13px;
+}
+.notice-links,
+.notice-links button {
+  font-size: 12px;
+}
+.connect-foot {
+  font-size: 10px;
+}
+@media (max-width: 560px) {
+  .dashboard-heading h1 {
+    font-size: 29px;
+  }
+  .dashboard-note {
+    font-size: 12px;
+  }
+  .dashboard > nav button {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+  .dashboard .text-xs {
+    font-size: 12px;
+  }
+  .dashboard .tag {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+  .dashboard section > h2 {
+    font-size: 14px;
+  }
+  .dashboard .tracker-step-heading h3 {
+    font-size: 13px;
+  }
+  .lookup-query-panel > p,
+  .lookup-guidance p {
+    font-size: 13px;
+  }
+  .lookup-guidance strong {
+    font-size: 14px;
+  }
+  .lookup-example {
+    font-size: 10px;
+  }
+  .connect-heading p {
+    font-size: 13px;
+  }
+  .wallet-notice {
+    font-size: 12px;
+  }
+  .notice-links,
+  .notice-links button {
+    font-size: 11px;
+  }
+  .connect-foot {
+    font-size: 8px;
+  }
+}

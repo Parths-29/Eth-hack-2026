@@ -92,3 +92,8 @@ Desktop hero geometry now derives from available viewport height, with a fluid w
 The latest palette restores #0D1322 slate navy with #151E34 / #1E294A waves, coral #FF5C39 and restrained amber #FF8C42 highlights. `gradient-wave.tsx` exposes a typed palette wrapper over the existing dependency-free WebGL renderer; the supplied prompt did not contain a separate GradientWave implementation. Existing resource limits, reduced-motion and static fallback behavior are preserved.
 
 The pill carousel below the lifecycle section is a labelled demonstration feed, not live risk telemetry. Existing synthetic inputs are reused; Moonwell/Vesu records remain pending rather than asserting unverified incident prices. Actions route to the corresponding public views. Hover/focus, manual pause, offscreen/hidden-tab suspension, reduced-motion scrolling and inert duplicate copies are supported. Laptop-fit hero geometry and the non-glass lifecycle section are retained.
+
+
+## Marketing typography
+
+`marketing.css` supplies the larger responsive type hierarchy: laptop hero headline around 58–69px, 42–62px section headings, 18px marketing body copy, readable lifecycle descriptions, stronger coverage/ticker typography, and larger wallet/workspace labels. The lifecycle visual is sticky alongside desktop steps and stays non-glass. Short laptop viewports use a bounded scale to keep hero actions in view; small screens use a separate readable scale rather than shrinking the desktop layout.
