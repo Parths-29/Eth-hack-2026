@@ -80,3 +80,8 @@ The current UI follows the latest supplied audit: no framed hero card, no cream 
 The latest brief refines the palette to obsidian #05070E, off-white #F1F3F7 and sunset coral #FF5533, with coral/crimson atmospheric light and emerald/red semantic tracker states. `glass.css` defines this material treatment, fluid shared page widths and lookup's two-column layout.
 
 The workspace shell stays mounted while tabs change; verdict data is not refetched on each tab. Keyed content scenes use a brief rise/perspective-tilt transition without animating document height. The stable scrollbar gutter prevents horizontal shifts. Reduced-motion mode uses immediate scene changes. The home terminal reserves space for its inline synthetic tracker and offers a safe VALID rejection scenario. Lookup shows its tracker directly alongside the query rather than shrinking into a single short card. No synthetic example asserts a real 14.28 WETH payout, CRE consensus or chain confirmations.
+
+
+## Laptop layout correction
+
+Desktop hero geometry now derives from available viewport height, with a fluid wider container, smaller two-line headline and bounded terminal preview. Verified at 1366×768, 1440×900, 1280×720, 1536×864, 1920×1080 and 1280×600. Tablet/mobile retain the stacked layout. The architectural lifecycle has no outer glass panel, backdrop blur or shadow; its diagram console is a quiet solid surface. Relevant tests are in `web/tests/laptop.spec.ts`.
