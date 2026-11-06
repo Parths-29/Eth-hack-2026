@@ -304,7 +304,13 @@ const UNIFORMS = {
 
 const pendingContextReleases = new WeakMap<HTMLCanvasElement, number>();
 
-function AnimatedShaderBackground({ className }: { className?: string }) {
+function AnimatedShaderBackground({
+  className,
+  palette,
+}: {
+  className?: string;
+  palette?: readonly string[];
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -367,7 +373,21 @@ function AnimatedShaderBackground({ className }: { className?: string }) {
     const navy = rgb("--navy"),
       cream = rgb("--cream"),
       coral = rgb("--coral");
-    const colors = [navy, navy, coral, cream, navy, navy, navy, navy];
+    const chosen = palette?.length
+      ? palette
+          .slice(0, 8)
+          .map((hex) =>
+            [0, 2, 4].map(
+              (offset) =>
+                parseInt(hex.replace("#", "").slice(offset, offset + 2), 16) /
+                255,
+            ),
+          )
+      : [navy, navy, coral, cream, navy];
+    const colors = Array.from(
+      { length: 8 },
+      (_, i) => chosen[i] ?? chosen[chosen.length - 1],
+    );
     gl.uniform3fv(uni.colors, new Float32Array(colors.flat()));
     gl.uniform4f(
       uni.shape,
@@ -552,7 +572,7 @@ function AnimatedShaderBackground({ className }: { className?: string }) {
         width,
         height,
         elapsed * UNIFORMS.timeScale,
-        UNIFORMS.colorCount,
+        palette?.length ? Math.min(palette.length, 8) : UNIFORMS.colorCount,
       );
       gl.uniform4f(
         uni.space,
@@ -606,7 +626,7 @@ function AnimatedShaderBackground({ className }: { className?: string }) {
       }, 0);
       pendingContextReleases.set(canvas, releaseTimer);
     };
-  }, []);
+  }, [palette]);
 
   return (
     <canvas
@@ -618,7 +638,13 @@ function AnimatedShaderBackground({ className }: { className?: string }) {
 }
 
 /** The static CSS treatment remains underneath the canvas at all times. */
-export function ShaderBackground({ className = "" }: { className?: string }) {
+export function ShaderBackground({
+  className = "",
+  palette,
+}: {
+  className?: string;
+  palette?: readonly string[];
+}) {
   const [animate, setAnimate] = useState(false);
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -629,7 +655,9 @@ export function ShaderBackground({ className = "" }: { className?: string }) {
   }, []);
   return (
     <div className={`wave-background ${className}`} aria-hidden="true">
-      {animate && <AnimatedShaderBackground className="wave-canvas" />}
+      {animate && (
+        <AnimatedShaderBackground className="wave-canvas" palette={palette} />
+      )}
       <div className="wave-fluting" />
     </div>
   );

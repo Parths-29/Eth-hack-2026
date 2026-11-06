@@ -6,7 +6,8 @@ import { DEMO_RECORDS } from "../../../shared/demo";
 import type { FrontendVerdict } from "../../../shared/types";
 import type { View } from "./redress-workspace";
 import { isAddress, loadVerdicts } from "../lib/data";
-import { ShaderBackground } from "./ui/istanblue";
+import { GradientWave } from "./ui/gradient-wave";
+import { TickerCarousel } from "./ui/ticker-carousel";
 import { FeatureSteps } from "./features/feature-section";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import {
@@ -172,7 +173,7 @@ export function Landing({
     <motion.main ref={home} className="mosaic-landing" {...surfaceMotion}>
       <div className="site-atmosphere" aria-hidden="true" />
       <div className="landing-atmosphere" aria-hidden="true">
-        <ShaderBackground />
+        <GradientWave />
       </div>
       <section className="mosaic-hero">
         <div className="wave-shade" aria-hidden="true" />
@@ -457,6 +458,7 @@ export function Landing({
         </div>
       </section>
       <FeatureSteps />
+      <TickerCarousel onNavigate={onNavigate} />
       <section className="mosaic-section pricing-section" id="pricing">
         <div className="center-heading" data-reveal>
           <span className="section-kicker">

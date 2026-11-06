@@ -85,3 +85,10 @@ The workspace shell stays mounted while tabs change; verdict data is not refetch
 ## Laptop layout correction
 
 Desktop hero geometry now derives from available viewport height, with a fluid wider container, smaller two-line headline and bounded terminal preview. Verified at 1366×768, 1440×900, 1280×720, 1536×864, 1920×1080 and 1280×600. Tablet/mobile retain the stacked layout. The architectural lifecycle has no outer glass panel, backdrop blur or shadow; its diagram console is a quiet solid surface. Relevant tests are in `web/tests/laptop.spec.ts`.
+
+
+## Midnight slate and protocol signal carousel
+
+The latest palette restores #0D1322 slate navy with #151E34 / #1E294A waves, coral #FF5C39 and restrained amber #FF8C42 highlights. `gradient-wave.tsx` exposes a typed palette wrapper over the existing dependency-free WebGL renderer; the supplied prompt did not contain a separate GradientWave implementation. Existing resource limits, reduced-motion and static fallback behavior are preserved.
+
+The pill carousel below the lifecycle section is a labelled demonstration feed, not live risk telemetry. Existing synthetic inputs are reused; Moonwell/Vesu records remain pending rather than asserting unverified incident prices. Actions route to the corresponding public views. Hover/focus, manual pause, offscreen/hidden-tab suspension, reduced-motion scrolling and inert duplicate copies are supported. Laptop-fit hero geometry and the non-glass lifecycle section are retained.

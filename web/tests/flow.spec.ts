@@ -159,10 +159,10 @@ test("home preserves theme and domain actions", async ({ page }) => {
   const colors = await page.evaluate(() => {
     const css = getComputedStyle(document.documentElement);
     return ["--navy", "--cream", "--coral"].map((k) =>
-      css.getPropertyValue(k).trim(),
+      css.getPropertyValue(k).trim().toUpperCase(),
     );
   });
-  expect(colors).toEqual(["#05070E", "#F1F3F7", "#FF5533"]);
+  expect(colors).toEqual(["#0D1322", "#F1F3F7", "#FF5C39"]);
   await page.getByRole("button", { name: "Stress 2×" }).click();
   await expect(page.getByText("2000", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Lookup", exact: true }).click();

@@ -11,6 +11,7 @@ import { Landing } from "./components/landing";
 import "./globals.css";
 import "./polish.css";
 import "./glass.css";
+import "./midnight.css";
 import { useSurfaceMotion } from "./components/ui/page-transition";
 
 type Provider = {
