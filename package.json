@@ -1,0 +1,16 @@
+{
+  "name": "redress",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @redress/web",
+    "build": "npm run build --workspace @redress/web",
+    "preview": "npm run preview --workspace @redress/web",
+    "test:e2e": "npm run test:e2e --workspace @redress/web",
+    "test": "npm run test:e2e"
+  }
+}
